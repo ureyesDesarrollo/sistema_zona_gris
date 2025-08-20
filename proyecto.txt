@@ -1,0 +1,61 @@
+Listado de rutas de carpetas
+El número de serie del volumen es 0C51-D3DC
+C:.
+|   index.html
+|   index_inicio.html
+|   proyecto.txt
+|   
++---assets
+|       favicon.webp
+|       logo_progel.webp
+|       paquetes.webp
+|       
++---css
+|       cocedores.css
+|       login.css
+|       navbar.css
+|       sessionTimer.css
+|       sidebar.css
+|       
++---js
+|   |   config.js
+|   |   index.js
+|   |   login.js
+|   |   
+|   +---components
+|   |   |   modal.js
+|   |   |   sessionTimer.js
+|   |   |   sidebar.js
+|   |   |   toast.js
+|   |   |   
+|   |   \---cocedores
+|   |           actions.js
+|   |           cardsStatus.js
+|   |           tablaCocedores.js
+|   |           
+|   +---pages
+|   |       cocedores.js
+|   |       
+|   +---router
+|   |       router.js
+|   |       routes.js
+|   |       
+|   +---services
+|   |       cocedores.service.js
+|   |       
+|   \---utils
+|           api.js
+|           debounce.js
+|           formatter.js
+|           helpers.js
+|           isNumber.js
+|           permisos.js
+|           session.js
+|           
+\---views
+    |   clarificador.html
+    |   cocedores.html
+    |   
+    \---cocedores
+            registrarHoraXHoraModal.html
+            

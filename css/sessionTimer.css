@@ -1,0 +1,56 @@
+.session-timer {
+    font-family: 'Roboto', sans-serif;
+}
+
+.badge.bg-primary-gradient {
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.badge.bg-primary-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.timer-text {
+    font-weight: 500;
+}
+
+.timer-value b {
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.25rem;
+    margin-left: 0.5rem;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-icon:active {
+    transform: scale(0.9);
+}
+
+.fa-redo {
+    font-size: 0.8rem;
+}

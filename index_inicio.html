@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de zona gris</title>
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="icon" href="assets/favicon.webp" type="image/x-icon">
+    <link rel="stylesheet" href="/css/sessionTimer.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+</head>
+<style>
+    /* Variables globales */
+
+    :root {
+        /* Fallbacks si no existen en tu tema */
+        --border-radius: 14px;
+        --box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+        --box-shadow-hover: 0 12px 28px rgba(0, 0, 0, .12);
+        --transition: .25s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Lucide: evitar que el SVG intercepte el click para que haga click el botón/enlace padre */
+    button [data-lucide],
+    button .lucide,
+    .btn [data-lucide],
+    .btn .lucide,
+    a [data-lucide],
+    a .lucide {
+        pointer-events: none;
+    }
+</style>
+
+<body>
+    <!-- Overlay que bloquea la UI -->
+    <div id="sessionOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none"
+        style="background: rgba(0,0,0,.45); backdrop-filter: blur(1px); z-index:1999;"></div>
+
+    <!-- Contenedor centrado -->
+    <div class="position-fixed top-50 start-50 translate-middle" style="z-index:2000;">
+        <!-- Toast de sesión expirada (no autohide) -->
+        <div class="toast justify-content-center align-items-center text-bg-danger border-0" id="sessionToast"
+            role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false"
+            style="min-width: 350px; max-width: 95vw; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,.15); border-left: 5px solid #dc3545; font-size: 16px;">
+            <div class="toast-header text-white" style="border-radius: 12px 12px 0 0; border-bottom: none;
+    background: linear-gradient(135deg, #dc3545, #c82333);">
+                <div class="d-flex align-items-center w-100">
+                    <div class="pulse-icon me-2">
+                        <i data-lucide="octagon-alert" class="fa-lg"></i>
+                    </div>
+                    <strong class="me-auto">Sesión expirada</strong>
+                </div>
+            </div>
+            <div class="toast-body p-4"
+                style="background-color: #f8f9fa; color: #212529; border-radius: 0 0 12px 12px;">
+                <div class="d-flex align-items-start">
+                    <div class="flex-grow-1">
+                        <p class="mb-3">Tu sesión ha caducado por inactividad. Por favor, inicia sesión nuevamente para
+                            continuar.</p>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-danger btn-sm btn-session-login">
+                                <i data-lucide="log-out" class="me-1"></i> Ir a login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- NAVBAR -->
+    <header class="header navbar navbar-expand navbar-light bg-white border-bottom fixed-top shadow-sm px-3 py-2">
+        <div class="container-fluid">
+            <!-- Logo / Nombre de la aplicación (izquierda) -->
+            <div class="d-flex align-items-center">
+                <img src="assets/logo_progel.webp" alt="Logo" style="width: 80px; height: 50px;">
+                <h6 class="mb-0 me-3 fw-semibold text-primary mx-4" style="font-size: 20px;">Control Zona Gris</h6>
+            </div>
+
+            <!-- Sección de usuario (derecha) -->
+            <div class="d-flex align-items-center ms-auto gap-3">
+                <!-- Información de usuario -->
+                <div class="d-flex align-items-center gap-2">
+                    <div class="user-avatar bg-primary text-white fw-bold d-flex align-items-center justify-content-center"
+                        style="width: 36px; height: 36px; border-radius: 50%; font-size: 0.9rem;" id="userAvatar">
+                    </div>
+                    <div class="user-info text-start d-none d-sm-block">
+                        <p class="user-name mb-0 fw-semibold small" id="nombre-usuario"></p>
+                        <small class="user-role text-secondary small" id="perfil-usuario"></small>
+                    </div>
+                </div>
+
+                <!-- Temporizador y botón de salida -->
+                <div class="vr d-none d-sm-block"></div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <div class="small text-muted d-none d-sm-block" id="sessionTimer"></div>
+                    <button id="logoutBtn" class="btn btn-outline-danger btn-sm ms-1" title="Cerrar sesión">
+                        <i data-lucide="log-out"></i>
+                        <span class="d-none d-sm-inline">Salir</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- LAYOUT: sidebar + contenido -->
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <!-- Sidebar items se renderizan dinámicamente -->
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO -->
+
+        <main id="container" class="content-area">
+            <!-- aquí inyectas tus vistas -->
+        </main>
+    </div>
+
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script> -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    <script type="module" src="/js/index.js"></script>
+</body>
+
+</html>
