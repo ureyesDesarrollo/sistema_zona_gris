@@ -1,6 +1,7 @@
 import { obtenerCocedoresProcesoById, obtenerDetelleCocedorProceso, obtenerFlujos, obtenerTemperaturaCocedores } from "../services/cocedores.service.js";
 import { debounce } from "../utils/debounce.js";
 import { formatter } from "../utils/formatter.js";
+import { getLocalDateTimeString } from "../utils/getLocalDateTimeString.js";
 import { validarInputNumerico } from "../utils/isNumber.js";
 import { showToast } from "./toast.js";
 
@@ -271,7 +272,7 @@ function procesosHtml(proceso) {
   console.log(materiales);
   const totalMateriales = materiales.length;
   console.log(totalMateriales);
-  
+
   return `
   <label class="list-group-item d-flex align-items-start py-3 px-3 hover-bg-light position-relative" 
          style="transition: all 0.2s;border-bottom: 1px solid #f8f9fa;cursor: pointer;">
@@ -340,11 +341,11 @@ export function renderMateriales(materiales, maxVisible = 5, visible = true) {
 
   const materialesVisibles = materiales.slice(0, maxVisible);
   const materialesOcultos = materiales.length - maxVisible;
-  
+
   let html = materialesVisibles.map(material => {
     const nombre = material.nombre || 'Material';
     const cantidad = material.cantidad || '0';
-    
+
     return `
       <span class="badge-modern" 
             data-bs-toggle="tooltip" 
@@ -354,7 +355,7 @@ export function renderMateriales(materiales, maxVisible = 5, visible = true) {
        ${visible ? `<small class="opacity-75">(${formatter.format(parseInt(cantidad))} kg)</small>` : ''}
       </span>`;
   }).join('');
-  
+
   // Si hay más materiales ocultos, mostrar un indicador
   if (materialesOcultos > 0) {
     html += `
@@ -365,7 +366,7 @@ export function renderMateriales(materiales, maxVisible = 5, visible = true) {
         +${materialesOcultos}
       </span>`;
   }
-  
+
   return html;
 }
 
@@ -466,6 +467,14 @@ export const showMaintenanceModal = (options = {}) => {
   });
 };
 
+/**
+ * Modal para captura de parámetros en cocedores.
+ * Mejora la validación, control de eventos, y mantiene modularidad limpia.
+ * - Se cargan y validan campos dinámicos.
+ * - Evita escuchas duplicadas y fugas de eventos.
+ * - Usa Bootstrap Modal y control DOM basado en ID dinámicos por cocedor.
+ */
+
 export async function showCocedorCaptureModal(config = {}) {
   const {
     cocedorId,
@@ -483,289 +492,165 @@ export async function showCocedorCaptureModal(config = {}) {
     return null;
   }
 
-  // 1) Cargar HTML del modal (solo una vez)
-  let res = await fetch("views/cocedores/registrarHoraXHoraModal.html");
-  let modalHtml = await res.text();
-
-  modalHtml = modalHtml
-    .replace(/\$\{modalId\}/g, modalId)
-    .replace(/\$\{title\}/g, title)
-    .replace(/\$\{icon\}/g, icon)
-    .replace(/\$\{size\}/g, size);
-
+  // §1 Cargar HTML del modal
   if (!document.getElementById(modalId)) {
+    const res = await fetch("views/cocedores/registrarHoraXHoraModal.html");
+    const modalHtml = (await res.text())
+      .replace(/\$\{modalId\}/g, modalId)
+      .replace(/\$\{title\}/g, title)
+      .replace(/\$\{icon\}/g, icon)
+      .replace(/\$\{size\}/g, size);
+
     const wrapper = document.createElement("div");
     wrapper.innerHTML = modalHtml;
     document.body.appendChild(wrapper.firstElementChild);
   }
 
   const modalElement = document.getElementById(modalId);
-
-  // Instanciar modal Bootstrap
   const modal = new bootstrap.Modal(modalElement, {
     backdrop: "static",
     keyboard: false
   });
 
-  // ⚠️ Solo después de que el modal esté en el DOM y visible, buscamos inputs y unimos listeners
-  modalElement.addEventListener("shown.bs.modal", () => {
-    const inputPH = document.getElementById(`${modalId}-ph`);
-    const inputNTU = document.getElementById(`${modalId}-ntu`);
-    const inputSolidos = document.getElementById(`${modalId}-solidos`);
-    const inputErrorPH = document.getElementById(`${modalId}-ph-error`);
-    const inputErrorNTU = document.getElementById(`${modalId}-ntu-error`);
-    const inputErrorSolidos = document.getElementById(`${modalId}-solidos-error`);
-    const inputCargaCuero = document.getElementById(`${modalId}-carga-cuero`);
-    const inputErrorCargaCuero = document.getElementById(`${modalId}-carga-cuero-error`);
+  // §2 Validar campos
+  const camposValidar = [
+    { id: 'ph', min: 3.0, max: 3.8, nombre: 'pH' },
+    { id: 'ntu', min: 60, max: 600, nombre: 'NTU' },
+    { id: 'solidos', min: 1.5, max: 2.8, nombre: '% Sólidos' },
+    { id: 'carga-cuero', min: 1, max: 20000, nombre: 'Carga de cuero' }
+  ];
 
-    if (!inputPH || !inputNTU || !inputSolidos || !inputCargaCuero) return;
-
-    inputCargaCuero.focus();
-
-    // ===== Carga de cuero =====
-    if (!inputCargaCuero.__bound) {
-      inputCargaCuero.__bound = true;
-
-      const validateCargaCuero = () => validarInputNumerico(inputCargaCuero, inputErrorCargaCuero, { min: 1, max: 20000, nombre: "Carga de cuero" });
-      const onCargaCueroKeydown = (e) => { if (e.key === 'Enter') validateCargaCuero(); };
-      const debouncedCargaCuero = debounce(validateCargaCuero, 350);
-
-      inputCargaCuero.addEventListener('input', debouncedCargaCuero);
-      inputCargaCuero.addEventListener('blur', validateCargaCuero);
-      inputCargaCuero.addEventListener('keydown', onCargaCueroKeydown);
-
-      inputCargaCuero.__debounced = debouncedCargaCuero;
-      inputCargaCuero.__onBlur = validateCargaCuero;
-      inputCargaCuero.__onKeydown = onCargaCueroKeydown;
-
-      inputCargaCuero.addEventListener('input', () => {
-        inputCargaCuero.classList.remove('cocedor-form-control-invalid');
-        if (inputErrorCargaCuero) inputErrorCargaCuero.textContent = "";
-      });
+  const validarCampos = () => {
+    let todoOk = true;
+    for (const campo of camposValidar) {
+      const input = document.getElementById(`${modalId}-${campo.id}`);
+      const error = document.getElementById(`${modalId}-${campo.id}-error`);
+      const valido = validarInputNumerico(input, error, campo);
+      if (!valido) todoOk = false;
     }
-    // ===== pH =====
-    if (!inputPH.__bound) {
-      inputPH.__bound = true;
-
-      const validatePH = () => validarInputNumerico(inputPH, inputErrorPH, { min: 3.0, max: 3.8, nombre: "pH" });
-      const onPHKeydown = (e) => { if (e.key === 'Enter') validatePH(); };
-      const debouncedPH = debounce(validatePH, 350);
-
-      inputPH.addEventListener('input', debouncedPH);
-      inputPH.addEventListener('blur', validatePH);
-      inputPH.addEventListener('keydown', onPHKeydown);
-
-      inputPH.__debounced = debouncedPH;
-      inputPH.__onBlur = validatePH;
-      inputPH.__onKeydown = onPHKeydown;
-
-      inputPH.addEventListener('input', () => {
-        inputPH.classList.remove('cocedor-form-control-invalid');
-        if (inputErrorPH) inputErrorPH.textContent = "";
-      });
-    }
-
-    // ===== NTU =====
-    if (!inputNTU.__bound) {
-      inputNTU.__bound = true;
-
-      const validateNTU = () => validarInputNumerico(inputNTU, inputErrorNTU, { min: 60, max: 600, nombre: "NTU" });
-      const onNTUKeydown = (e) => { if (e.key === 'Enter') validateNTU(); };
-      const debouncedNTU = debounce(validateNTU, 350);
-
-      inputNTU.addEventListener('input', debouncedNTU);
-      inputNTU.addEventListener('blur', validateNTU);
-      inputNTU.addEventListener('keydown', onNTUKeydown);
-
-      inputNTU.__debounced = debouncedNTU;
-      inputNTU.__onBlur = validateNTU;
-      inputNTU.__onKeydown = onNTUKeydown;
-
-      inputNTU.addEventListener('input', () => {
-        inputNTU.classList.remove('cocedor-form-control-invalid');
-        if (inputErrorNTU) inputErrorNTU.textContent = "";
-      });
-    }
-
-    // ===== % Sólidos =====
-    if (!inputSolidos.__bound) {
-      inputSolidos.__bound = true;
-
-      const validateSolidos = () => validarInputNumerico(inputSolidos, inputErrorSolidos, { min: 1.5, max: 2.8, nombre: "% Sólidos" });
-      const onSolKeydown = (e) => { if (e.key === 'Enter') validateSolidos(); };
-      const debouncedSolidos = debounce(validateSolidos, 350);
-
-      inputSolidos.addEventListener('input', debouncedSolidos);
-      inputSolidos.addEventListener('blur', validateSolidos);
-      inputSolidos.addEventListener('keydown', onSolKeydown);
-
-      inputSolidos.__debounced = debouncedSolidos;
-      inputSolidos.__onBlur = validateSolidos;
-      inputSolidos.__onKeydown = onSolKeydown;
-
-      inputSolidos.addEventListener('input', () => {
-        inputSolidos.classList.remove('cocedor-form-control-invalid');
-        if (inputErrorSolidos) inputErrorSolidos.textContent = "";
-      });
-    }
-  }, { once: true });
-
-
-  // ------ Inicialización de valores por defecto ------
-  const now = new Date();
-  const fecha = now.toISOString().split("T")[0];
-  const hora = now.toTimeString().split(" ")[0].slice(0, 5);
-  const fechaHora = `${fecha} ${hora}`;
-
-  const inputFecha = document.getElementById(`${modalId}-fecha`);
-  if (inputFecha) inputFecha.value = fechaHora;
-
-  const datosCocedor = await obtenerCocedoresProcesoById(cocedorId);
-  if (!datosCocedor) {
-    showToast("No se encontraron datos del cocedor.", false);
-    return null;
-  }
-
-  const flujos = await obtenerFlujos();
-  if (!flujos) {
-    showToast("No se encontraron flujos.", false);
-    return null;
-  }
-
-  const { agrupacion, relacion_id, cocedor } = datosCocedor;
-  const cocedorSeleccionado = `${cocedor}, ${agrupacion}`;
-  const flujoSeleccionado = `Flujo_cocedor_${cocedorId}`;
-  const flujo = flujos[0][flujoSeleccionado];
-
-  const temperatura = await obtenerTemperaturaCocedores();
-  const { COCEDORES_TEMPERATURA_DE_ENTRADA, COCEDORES_TEMPERATURA_DE_SALIDA } = temperatura;
-
-  document.getElementById(`${modalId}-cocedor`).value = cocedorSeleccionado;
-  document.getElementById(`${modalId}-relacion-id`).value = relacion_id;
-  document.getElementById(`${modalId}-operador`).value = operador;
-  document.getElementById(`${modalId}-flujo`).value = flujo;
-  document.getElementById(`${modalId}-temp-entrada`).value = COCEDORES_TEMPERATURA_DE_ENTRADA;
-  document.getElementById(`${modalId}-temp-salida`).value = COCEDORES_TEMPERATURA_DE_SALIDA;
-
-  if (COCEDORES_TEMPERATURA_DE_ENTRADA <= 56 || COCEDORES_TEMPERATURA_DE_ENTRADA >= 70) {
-    document.getElementById(`${modalId}-temp-entrada`).classList.add('cocedor-form-control-invalid');
-  }
-  if (COCEDORES_TEMPERATURA_DE_SALIDA <= 55 || COCEDORES_TEMPERATURA_DE_SALIDA >= 60) {
-    document.getElementById(`${modalId}-temp-salida`).classList.add('cocedor-form-control-invalid');
-  }
-
-  const validFlujo = {
-    Flujo_cocedor_1: { min: 140, max: 170 },
-    Flujo_cocedor_2: { min: 140, max: 170 },
-    Flujo_cocedor_3: { min: 140, max: 170 },
-    Flujo_cocedor_4: { min: 140, max: 170 },
-    Flujo_cocedor_5: { min: 140, max: 170 },
-    Flujo_cocedor_6: { min: 150, max: 190 },
-    Flujo_cocedor_7: { min: 150, max: 190 }
+    return todoOk;
   };
 
-  console.log(flujoSeleccionado);
+  const limpiarInput = (input, error) => {
+    input.classList.remove('cocedor-form-control-invalid');
+    if (error) error.textContent = "";
+  };
 
-  const validFlujoCocedor = validFlujo[flujoSeleccionado];
-  if (flujo >= validFlujoCocedor.min && flujo <= validFlujoCocedor.max) {
-    document.getElementById(`${modalId}-flujo`).classList.remove('cocedor-form-control-invalid');
-  } else {
-    document.getElementById(`${modalId}-flujo`).classList.add('cocedor-form-control-invalid');
+  const enlazarValidaciones = () => {
+    document.getElementById(`${modalId}-carga-cuero`).focus();
+    camposValidar.forEach(campo => {
+      const input = document.getElementById(`${modalId}-${campo.id}`);
+      const error = document.getElementById(`${modalId}-${campo.id}-error`);
+      if (!input || input.__bound) return;
+
+      const validate = () => validarInputNumerico(input, error, campo);
+      const debounced = debounce(validate, 300);
+
+      input.addEventListener('input', debounced);
+      input.addEventListener('blur', validate);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') validate();
+      });
+      input.addEventListener('input', () => limpiarInput(input, error));
+
+      input.__bound = true;
+    });
+  };
+
+  modalElement.addEventListener("shown.bs.modal", enlazarValidaciones, { once: true });
+
+  // §3 Precargar valores por defecto
+  const now = new Date();
+  const fechaHora = getLocalDateTimeString(now);
+  document.getElementById(`${modalId}-fecha`).value = fechaHora;
+  const datos = await obtenerCocedoresProcesoById(cocedorId);
+  const flujos = await obtenerFlujos();
+  const temperatura = await obtenerTemperaturaCocedores();
+
+  if (!datos || !flujos || !temperatura) {
+    showToast("Datos del cocedor incompletos.", false);
+    return null;
   }
 
-  const btnConfirm = document.getElementById(`${modalId}-confirm`);
-  const btnCancel = document.getElementById(`${modalId}-cancel`);
+  const { agrupacion, relacion_id, cocedor } = datos;
+  const flujo = flujos[0][`Flujo_cocedor_${cocedorId}`];
+  const { COCEDORES_TEMPERATURA_DE_ENTRADA, COCEDORES_TEMPERATURA_DE_SALIDA } = temperatura;
 
+  const setValor = (id, valor) => document.getElementById(`${modalId}-${id}`).value = valor;
+  setValor('cocedor', `${cocedor}, ${agrupacion}`);
+  setValor('relacion-id', relacion_id);
+  setValor('operador', operador);
+  setValor('flujo', flujo);
+  setValor('temp-entrada', COCEDORES_TEMPERATURA_DE_ENTRADA);
+  setValor('temp-salida', COCEDORES_TEMPERATURA_DE_SALIDA);
+
+  // Validar temperatura y flujo
+  const flujoConfig = {
+    Flujo_cocedor_1: [140, 170],
+    Flujo_cocedor_2: [140, 170],
+    Flujo_cocedor_3: [140, 170],
+    Flujo_cocedor_4: [140, 170],
+    Flujo_cocedor_5: [140, 170],
+    Flujo_cocedor_6: [150, 190],
+    Flujo_cocedor_7: [150, 190],
+  };
+  const [minF, maxF] = flujoConfig[`Flujo_cocedor_${cocedorId}`] || [0, 9999];
+  const flujoInput = document.getElementById(`${modalId}-flujo`);
+  flujoInput.classList.toggle('cocedor-form-control-invalid', !(flujo >= minF && flujo <= maxF));
+
+  document.getElementById(`${modalId}-temp-entrada`).classList.toggle('cocedor-form-control-invalid', !(COCEDORES_TEMPERATURA_DE_ENTRADA > 56 && COCEDORES_TEMPERATURA_DE_ENTRADA < 70));
+  document.getElementById(`${modalId}-temp-salida`).classList.toggle('cocedor-form-control-invalid', !(COCEDORES_TEMPERATURA_DE_SALIDA > 55 && COCEDORES_TEMPERATURA_DE_SALIDA < 60));
+
+  // §4 Mostrar modal y resolver promesa
   modal.show();
-
-  // 2) Envolver en una Promesa y resolver al confirmar / cerrar
   return new Promise((resolve) => {
+    const btnConfirm = document.getElementById(`${modalId}-confirm`);
+    const btnCancel = document.getElementById(`${modalId}-cancel`);
+
     const onConfirm = () => {
-      const inputPH = document.getElementById(`${modalId}-ph`);
-      const inputNTU = document.getElementById(`${modalId}-ntu`);
-      const inputSolidos = document.getElementById(`${modalId}-solidos`);
-      const inputErrorPH = document.getElementById(`${modalId}-ph-error`);
-      const inputErrorNTU = document.getElementById(`${modalId}-ntu-error`);
-      const inputErrorSolidos = document.getElementById(`${modalId}-solidos-error`);
-      const inputCargaCuero = document.getElementById(`${modalId}-carga-cuero`);
-      const inputErrorCargaCuero = document.getElementById(`${modalId}-carga-cuero-error`);
+      /* if (!validarCampos()) {
+        showToast("Corrige los campos marcados en rojo.", false);
+        return;
+      } */
+
+      const getRadio = (name) => document.querySelector(`input[name="${modalId}-${name}"]:checked`)?.value || "";
+      const getVal = (id) => document.getElementById(`${modalId}-${id}`)?.value || "";
+
       const data = {
-        cocedor: cocedorSeleccionado,
-        relacion_id: relacion_id,
-        fecha: document.getElementById(`${modalId}-fecha`)?.value || "",
-        operador: document.getElementById(`${modalId}-operador`)?.value || "",
-        flujo: document.getElementById(`${modalId}-flujo`)?.value || "",
-        tempEntrada: document.getElementById(`${modalId}-temp-entrada`)?.value || "",
-        tempSalida: document.getElementById(`${modalId}-temp-salida`)?.value || "",
-        cargaCuero: document.getElementById(`${modalId}-carga-cuero`)?.value || "",
-        ph: inputPH?.value || "",
-        ntu: inputNTU?.value || "",
-        solidos: inputSolidos?.value || "",             // <<<<< nuevo campo
-        muestra: document.querySelector(`input[name="${modalId}-muestra"]:checked`)?.value || "",
-        agitacion: document.querySelector(`input[name="${modalId}-agitacion"]:checked`)?.value || "",
-        desengrasador: document.querySelector(`input[name="${modalId}-desengrasador"]:checked`)?.value || "",
-        modo: document.querySelector(`input[name="${modalId}-modo"]:checked`)?.value || "",
-        observaciones: document.getElementById(`${modalId}-observaciones`)?.value || "N/A"
+        cocedor: getVal("cocedor"),
+        relacion_id: getVal("relacion-id"),
+        fecha: getVal("fecha"),
+        operador: getVal("operador"),
+        flujo: getVal("flujo"),
+        tempEntrada: getVal("temp-entrada"),
+        tempSalida: getVal("temp-salida"),
+        cargaCuero: getVal("carga-cuero"),
+        ph: getVal("ph"),
+        ntu: getVal("ntu"),
+        solidos: getVal("solidos"),
+        muestra: getRadio("muestra"),
+        agitacion: getRadio("agitacion"),
+        desengrasador: getRadio("desengrasador"),
+        modo: getRadio("modo"),
+        observaciones: getVal("observaciones") || "N/A"
       };
-      if (data.muestra === "no") {
-        showToast("Debe tomar una muestra.", false);
-        return;
-      }
-      if (data.agitacion === "off") {
-        showToast("Debe activar la agitación.", false);
-        return;
-      }
-      if (data.desengrasador === "off") {
-        showToast("Debe activar el desengrasador.", false);
+
+      if (data.muestra === "no" || data.agitacion === "off" || data.desengrasador === "off") {
+        showToast("Verifica muestra, agitación y desengrasador.", false);
         return;
       }
 
-      validarInputNumerico(inputPH, inputErrorPH, { min: 3.0, max: 3.8, nombre: "pH" });
-      validarInputNumerico(inputNTU, inputErrorNTU, { min: 60, max: 600, nombre: "NTU" });
-      validarInputNumerico(inputSolidos, inputErrorSolidos, { min: 1.5, max: 2.8, nombre: "% Sólidos" });
-      validarInputNumerico(inputCargaCuero, inputErrorCargaCuero, { min: 1, max: 20000, nombre: "Carga de cuero" });
-
-      cleanup();
       modal.hide();
       resolve(data);
     };
 
-    const onCancelOrHide = () => {
-      cleanup();
-      resolve(null);
-    };
+    const onCancel = () => resolve(null);
 
-    btnConfirm?.addEventListener("click", onConfirm, { once: true });
-    btnCancel?.addEventListener("click", onCancelOrHide, { once: true });
-    modalElement.addEventListener("hidden.bs.modal", onCancelOrHide, { once: true });
-
-    function cleanupField(input) {
-      if (!input) return;
-      if (input.__debounced) input.removeEventListener('input', input.__debounced);
-      if (input.__onBlur) input.removeEventListener('blur', input.__onBlur);
-      if (input.__onKeydown) input.removeEventListener('keydown', input.__onKeydown);
-      input.__debounced = null;
-      input.__onBlur = null;
-      input.__onKeydown = null;
-      input.__bound = false;
-    }
-
-
-    function cleanup() {
-      btnConfirm?.removeEventListener("click", onConfirm);
-      btnCancel?.removeEventListener("click", onCancelOrHide);
-      modalElement.removeEventListener("hidden.bs.modal", onCancelOrHide);
-      const inputPH = document.getElementById(`${modalId}-ph`);
-      const inputNTU = document.getElementById(`${modalId}-ntu`);
-      const inputSolidos = document.getElementById(`${modalId}-solidos`);
-      const inputCargaCuero = document.getElementById(`${modalId}-carga-cuero`);
-      cleanupField(inputPH);
-      cleanupField(inputNTU);
-      cleanupField(inputSolidos);
-      cleanupField(inputCargaCuero);
-    }
+    btnConfirm.addEventListener("click", onConfirm, { once: true });
+    btnCancel.addEventListener("click", onCancel, { once: true });
   });
 }
+
 
 export async function showCocedorValidateModal(config = {}) {
   const {
@@ -785,25 +670,18 @@ export async function showCocedorValidateModal(config = {}) {
   }
 
   try {
-    // 1) Cargar HTML del modal (solo una vez)
     const res = await fetch("views/cocedores/validarHoraXHoraModal.html");
-    if (!res.ok) {
-      throw new Error(`Failed to load modal HTML: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`Failed to load modal HTML: ${res.status}`);
 
     let modalHtml = await res.text();
-
     modalHtml = modalHtml
       .replace(/\$\{modalId\}/g, modalId)
       .replace(/\$\{title\}/g, title)
       .replace(/\$\{icon\}/g, icon)
       .replace(/\$\{size\}/g, size);
 
-    // Remove existing modal if it exists to prevent duplicates
     const existingModal = document.getElementById(modalId);
-    if (existingModal) {
-      existingModal.remove();
-    }
+    if (existingModal) existingModal.remove();
 
     const wrapper = document.createElement("div");
     wrapper.innerHTML = modalHtml;
@@ -812,14 +690,8 @@ export async function showCocedorValidateModal(config = {}) {
     const modalElement = document.getElementById(modalId);
     const btnConfirm = modalElement.querySelector('.btn-confirm');
     const btnCancel = modalElement.querySelector('.btn-cancel');
+    const modal = new bootstrap.Modal(modalElement, { backdrop: "static", keyboard: false });
 
-    // Instanciar modal Bootstrap
-    const modal = new bootstrap.Modal(modalElement, {
-      backdrop: "static",
-      keyboard: false
-    });
-
-    // Validation ranges configuration
     const VALIDATION_RANGES = {
       flujo: {
         Flujo_cocedor_1: { min: 140, max: 170 },
@@ -839,22 +711,21 @@ export async function showCocedorValidateModal(config = {}) {
     };
 
     function getModalElements() {
+      const fields = ['flujo', 'temp-entrada', 'temp-salida', 'carga-cuero', 'solidos', 'ph', 'ntu'];
+      const base = Object.fromEntries(
+        fields.flatMap(name => {
+          const camelName = camel(name);
+          return [
+            [`input${camelName}`, document.getElementById(`${modalId}-${name}`)],
+            [`inputError${camelName}`, document.getElementById(`${modalId}-${name}-error`)]
+          ];
+        })
+      );
+
       return {
-        inputFlujo: document.getElementById(`${modalId}-flujo`),
-        inputErrorFlujo: document.getElementById(`${modalId}-flujo-error`),
-        inputTempEntrada: document.getElementById(`${modalId}-temp-entrada`),
-        inputErrorTempEntrada: document.getElementById(`${modalId}-temp-entrada-error`),
-        inputTempSalida: document.getElementById(`${modalId}-temp-salida`),
-        inputErrorTempSalida: document.getElementById(`${modalId}-temp-salida-error`),
-        inputCargaCuero: document.getElementById(`${modalId}-carga-cuero`),
-        inputErrorCargaCuero: document.getElementById(`${modalId}-carga-cuero-error`),
-        inputSolidos: document.getElementById(`${modalId}-solidos`),
-        inputErrorSolidos: document.getElementById(`${modalId}-solidos-error`),
-        inputPH: document.getElementById(`${modalId}-ph`),
-        inputErrorPH: document.getElementById(`${modalId}-ph-error`),
-        inputNTU: document.getElementById(`${modalId}-ntu`),
-        inputErrorNTU: document.getElementById(`${modalId}-ntu-error`),
-        observaciones: document.getElementById(`comentarios-validacion`),
+        ...base,
+        inputObservaciones: document.getElementById(`${modalId}-observaciones`),
+        observacionesSuper: document.getElementById(`comentarios-validacion`),
         inputFecha: document.getElementById(`${modalId}-fecha`),
         inputOperador: document.getElementById(`${modalId}-operador`),
         inputCocedor: document.getElementById(`${modalId}-cocedor`),
@@ -865,105 +736,71 @@ export async function showCocedorValidateModal(config = {}) {
       };
     }
 
-    function validateField(input, errorElement, range, fieldName, cocedorType = null) {
-      if (!input || !errorElement) return false;
-
-      const value = parseFloat(input.value);
-      let validRange = range;
-
-      // Special handling for flujo validation
-      if (fieldName === 'flujo' && cocedorType) {
-        validRange = range[cocedorType] || range.Flujo_cocedor_1;
-      }
-
-      if (isNaN(value) || value < validRange.min || value > validRange.max) {
-        input.classList.add('cocedor-form-control-invalid');
-        errorElement.textContent = `El valor debe estar entre ${validRange.min} y ${validRange.max}. Ajuste el cocedor.`;
-        return false;
-      } else {
-        input.classList.remove('cocedor-form-control-invalid');
-        errorElement.textContent = "";
-        return true;
-      }
+    function validateField(input, error, { min, max }) {
+      if (!input) console.log('No se proporciono input');
+      if (!error) console.log('No se proporciono error');
+      const value = parseFloat(input?.value);
+      const valid = !isNaN(value) && value >= min && value <= max;
+      input?.classList.toggle('cocedor-form-control-invalid', !valid);
+      if (error) error.textContent = valid ? '' : `El valor debe estar entre ${min} y ${max}. Ajuste el cocedor.`;
+      return valid;
     }
 
-    function validateAllFields(elements, cocedorType) {
-      const validations = [
-        validateField(elements.inputTempEntrada, elements.inputErrorTempEntrada, VALIDATION_RANGES.tempEntrada, 'tempEntrada'),
-        validateField(elements.inputTempSalida, elements.inputErrorTempSalida, VALIDATION_RANGES.tempSalida, 'tempSalida'),
-        validateField(elements.inputFlujo, elements.inputErrorFlujo, VALIDATION_RANGES.flujo, 'flujo', cocedorType),
-        validateField(elements.inputPH, elements.inputErrorPH, VALIDATION_RANGES.ph, 'ph'),
-        validateField(elements.inputNTU, elements.inputErrorNTU, VALIDATION_RANGES.ntu, 'ntu'),
-        validateField(elements.inputSolidos, elements.inputErrorSolidos, VALIDATION_RANGES.solidos, 'solidos'),
-        validateField(elements.inputCargaCuero, elements.inputErrorCargaCuero, VALIDATION_RANGES.cargaCuero, 'cargaCuero')
-      ];
-
-      return validations.every(valid => valid);
+    function validateAll({ cocedorType, ...elements }) {
+      return [
+        validateField(elements.inputTempEntrada, elements.inputErrorTempEntrada, VALIDATION_RANGES.tempEntrada),
+        validateField(elements.inputTempSalida, elements.inputErrorTempSalida, VALIDATION_RANGES.tempSalida),
+        validateField(elements.inputFlujo, elements.inputErrorFlujo, VALIDATION_RANGES.flujo[cocedorType] || VALIDATION_RANGES.flujo.Flujo_cocedor_1),
+        validateField(elements.inputPH, elements.inputErrorPH, VALIDATION_RANGES.ph),
+        validateField(elements.inputNTU, elements.inputErrorNTU, VALIDATION_RANGES.ntu),
+        validateField(elements.inputSolidos, elements.inputErrorSolidos, VALIDATION_RANGES.solidos),
+        validateField(elements.inputCargaCuero, elements.inputErrorCargaCuero, VALIDATION_RANGES.cargaCuero)
+      ].every(Boolean);
     }
 
     modalElement.addEventListener("shown.bs.modal", async () => {
-      try {
-        const detalle = await obtenerDetelleCocedorProceso(cocedorId);
-        const elements = getModalElements();
-
-        if (!detalle) {
-          showToast("Error al cargar los detalles del cocedor.", false);
-          modal.hide();
-          return;
-        }
-        const { agrupacion, relacion_id, cocedor } = detalle;
-        console.log(detalle);
-        const cocedorSeleccionado = `${cocedor}, ${agrupacion}`;
-        if (elements.indicatorStatus) elements.indicatorStatus.classList.add('status-pending');
-        if (elements.indicatorStatusText) elements.indicatorStatusText.textContent = 'Pendiente de validación';
-
-        if (detalle?.supervisor_validado === '1') {
-          if (elements.indicatorStatus) elements.indicatorStatus.classList.remove('status-pending');
-          if (elements.indicatorStatus) elements.indicatorStatus.classList.add('status-validado');
-          if (elements.indicatorStatusText) elements.indicatorStatusText.textContent = 'Validado';
-        }
-        if (elements.inputFecha) elements.inputFecha.value = detalle?.fecha_hora || '';
-        if (elements.inputOperador) elements.inputOperador.value = detalle?.responsable || '';
-        if (elements.inputCocedor) elements.inputCocedor.value = cocedorSeleccionado;
-        if (elements.inputRelacionId) elements.inputRelacionId.value = relacion_id;
-        if (elements.inputFlujo) elements.inputFlujo.value = detalle?.param_agua || '';
-        if (elements.inputTempEntrada) elements.inputTempEntrada.value = detalle?.param_temp_entrada || '';
-        if (elements.inputTempSalida) elements.inputTempSalida.value = detalle?.param_temp_salida || '';
-        if (elements.inputCargaCuero) elements.inputCargaCuero.value = detalle?.peso_consumido || '';
-        if (elements.inputSolidos) elements.inputSolidos.value = detalle?.param_solidos || '';
-        if (elements.inputPH) elements.inputPH.value = detalle?.param_ph || '';
-        if (elements.inputNTU) elements.inputNTU.value = detalle?.param_ntu || '';
-        if (elements.observaciones) elements.observaciones.value = detalle?.observaciones || '';
-        if (elements.inputValidadoPor) elements.inputValidadoPor.value = supervisor || '';
-
-        const cocedorType = config.cocedorType || 'Flujo_cocedor_1';
-        validateAllFields(elements, cocedorType);
-
-      } catch (error) {
-        console.error('Error loading cocedor details:', error);
-        showToast("Error al cargar los detalles del cocedor.", false);
-        modal.hide();
+      const detalle = await obtenerDetelleCocedorProceso(cocedorId);
+      const el = getModalElements();
+      if (!detalle) return modal.hide(), showToast("Error al cargar los detalles del cocedor.", false);
+      const cocedorSeleccionado = `${detalle.cocedor}, ${detalle.agrupacion}`;
+      if (detalle.supervisor_validado === '0') {
+        el.indicatorStatusText.textContent = 'Pendiente de validación';
+      } else {
+        el.indicatorStatusText.textContent = 'Validado';
       }
+      el.inputFecha.value = detalle.fecha_hora;
+      el.inputOperador.value = detalle.responsable;
+      el.inputCocedor.value = cocedorSeleccionado;
+      el.inputRelacionId.value = detalle.detalle_id;
+      el.inputFlujo.value = detalle.param_agua;
+      el.inputTempEntrada.value = detalle.param_temp_entrada;
+      el.inputTempSalida.value = detalle.param_temp_salida;
+      el.inputCargaCuero.value = detalle.peso_consumido;
+      el.inputSolidos.value = detalle.param_solidos;
+      el.inputPh.value = detalle.param_ph;
+      el.inputNtu.value = detalle.param_ntu;
+      el.inputObservaciones.value = detalle.observaciones || '';
+      el.inputValidadoPor.value = supervisor;
 
+      if (detalle.supervisor_validado === '1') {
+        el.indicatorStatus?.classList.replace('status-pending', 'status-validado');
+        el.indicatorStatusText.textContent = 'Validado';
+      }
+      validateAll({ cocedorType: config.cocedorType || 'Flujo_cocedor_1', ...el });
     }, { once: true });
 
     modal.show();
 
-    // 2) Return Promise that resolves on confirm/cancel
-    return new Promise((resolve) => {
-
-      const onConfirm = () => {
-        const elements = getModalElements();
-        const comentariosValidacion = document.getElementById(`comentarios-validacion`);
-        if (!comentariosValidacion.value) {
-          showToast("Debe ingresar comentarios de validación.", false);
-          return;
-        }
+    return new Promise(resolve => {
+      const confirm = () => {
+        console.log('confirm');
+        const el = getModalElements();
+        if (!el.observacionesSuper?.value) return showToast("Debe ingresar comentarios de validación.", false);
 
         const data = {
-          cocedor: elements.cocedorSeleccionado || cocedorId, 
-          relacion_id: elements.inputRelacionId.value,
-          observaciones: comentariosValidacion.value || "N/A"
+          cocedor: cocedorId,
+          relacion_id: el.inputRelacionId?.value,
+          observaciones: el.observacionesSuper?.value || "N/A"
         };
 
         cleanup();
@@ -971,40 +808,25 @@ export async function showCocedorValidateModal(config = {}) {
         resolve(data);
       };
 
-      const onCancelOrHide = () => {
-        cleanup();
-        resolve(null);
-      };
+      const cancel = () => cleanup() || resolve(null);
 
-      // Add event listeners
-      btnConfirm?.addEventListener("click", onConfirm, { once: true });
-      btnCancel?.addEventListener("click", onCancelOrHide, { once: true });
-      modalElement.addEventListener("hidden.bs.modal", onCancelOrHide, { once: true });
-
-      function cleanupField(input) {
-        if (!input) return;
-        // Remove any existing event listeners
-        const newInput = input.cloneNode(true);
-        input.parentNode.replaceChild(newInput, input);
-      }
+      btnConfirm?.addEventListener("click", confirm);
+      btnCancel?.addEventListener("click", cancel);
 
       function cleanup() {
-        btnConfirm?.removeEventListener("click", onConfirm);
-        btnCancel?.removeEventListener("click", onCancelOrHide);
-        modalElement.removeEventListener("hidden.bs.modal", onCancelOrHide);
-
-        const elements = getModalElements();
-        Object.values(elements).forEach(element => {
-          if (element && element.tagName === 'INPUT') {
-            cleanupField(element);
-          }
-        });
+        btnConfirm?.removeEventListener("click", confirm);
+        btnCancel?.removeEventListener("click", cancel);
       }
-    });
 
-  } catch (error) {
-    console.error('Error in showCocedorValidateModal:', error);
+    });
+  } catch (err) {
+    console.error('Error in showCocedorValidateModal:', err);
     showToast("Error al cargar el modal de validación.", false);
     return null;
   }
 }
+
+function camel(str) {
+  return str.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
+}
+

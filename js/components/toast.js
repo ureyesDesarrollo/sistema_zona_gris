@@ -6,7 +6,7 @@
  * @param {number} [options.duration=5000] - Duración en milisegundos
  * @param {string} [options.position='top-center'] - Posición (top-center, bottom-right, etc.)
  * @param {boolean} [options.autohide=true] - Ocultar automáticamente
- * @param {string} [options.icon] - Icono personalizado (clase FontAwesome)
+ * @param {string} [options.type='success'] - Tipo de notificación (success, warning, error)
  */
 
 export const showToast = (msg, ok = true, options = {}) => {
@@ -14,13 +14,33 @@ export const showToast = (msg, ok = true, options = {}) => {
       duration = 5000,
       position = 'top-center',
       autohide = true,
-      icon = null
+      type = 'success',
     } = options;
+
+    console.log(type);
+    const types = {
+      success: {
+        class: 'success',
+        icon: 'circle-check',
+      },
+      warning: {
+        class: 'warning',
+        icon: 'octagon-alert',
+      },
+      error: {
+        class: 'danger',
+        icon: 'octagon-alert',
+      },
+    };
+
+    if (!types[type]) {
+      console.warn(`Tipo de toast no válido: ${type}. Usando 'success' por defecto.`);
+      type = 'success';
+    }
   
     const toastId = 'toast-' + Date.now();
-    const typeClass = ok ? 'success' : 'danger';
-    const defaultIcon = ok ? 'circle-check' : 'octagon-alert';
-    const toastIcon = icon || defaultIcon;
+    const typeClass = types[type]?.class || 'success';
+    const toastIcon = types[type]?.icon || 'circle-check';
   
     // Mapear posiciones a clases de Bootstrap
     const positionClasses = {

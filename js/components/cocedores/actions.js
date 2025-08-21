@@ -1,4 +1,4 @@
-import { changeStatus, registrarParo, finalizarParo, vaidarConsecutividadHoraXHora, registrarHoraXHora } from "../../services/cocedores.service.js";
+import { changeStatus, registrarParo, finalizarParo, vaidarConsecutividadHoraXHora, registrarHoraXHora, validarHoraXHora } from "../../services/cocedores.service.js";
 import { showCocedorCaptureModal, showCocedorValidateModal, showConfirm, showMaintenanceModal } from "../modal.js";
 import { showToast } from "../toast.js";
 import { getUserId } from "../../utils/session.js";
@@ -99,7 +99,12 @@ export const ACTIONS = {
 
         await runAction(btn, reloadFn, async () => {
             const res = await vaidarConsecutividadHoraXHora(data.relacion_id);
-            if (!res?.ok) throw new Error(res?.error || "Hora anterior no registrada");
+            if (!res?.ok){
+                showToast(res?.error || "Hora anterior no registrada", {type: 'danger'});
+                showToast("Se debe registrar la hora anterior para continuar, solicite al supervisor la autorización", options = {type: 'warning'});
+                return false;
+
+            }
 
             const payload = {
                 relacion_id: data.relacion_id,
@@ -158,16 +163,14 @@ export const ACTIONS = {
                 placeholder: "...",
             })) || "";
 
-        console.log(res);
-
         await runAction(btn, reloadFn, async () => {
             const payload = {
-                observaciones: res?.observaciones,
-                usuario_id,
-                relacion_id: res?.relacion_id
+                id: usuario_id,
+                detalle_id: res?.relacion_id
             };
-            console.log(payload);
-            const ok = await validarDato(payload);
+
+
+            const ok = await validarHoraXHora(payload);
             if (!ok?.data) throw new Error(ok?.error || "No se pudo validar el registro.");
             showToast("Registro validado correctamente.", true);
         });

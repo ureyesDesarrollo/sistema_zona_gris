@@ -1,5 +1,6 @@
 import { FUNCIONES_COCEDORES, CATALOGOS_COCEDORES } from "../config.js";
 import { fetchApi } from "../utils/api.js"
+import { getLocalDateTimeString } from "../utils/getLocalDateTimeString.js";
 
 export async function fetchCocedores() {
   
@@ -116,9 +117,10 @@ export const obtenerTemperaturaCocedores = async () => {
 
 export const vaidarConsecutividadHoraXHora = async (id) => {
   try {
-    const fecha_hora = new Date().toISOString();
-    console.log(fecha_hora);
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/validar-consecutividad/${id}/${fecha_hora}`);
+    const now = new Date();
+  const fechaHora = getLocalDateTimeString(now);
+    console.log(fechaHora);
+    const res = await fetchApi(`${FUNCIONES_COCEDORES}/validar-consecutividad/${id}/${fechaHora}`);
     if (!res.success) throw new Error(res.error);
     return res.data;
   } catch (err) {
@@ -145,5 +147,15 @@ export const obtenerDetelleCocedorProceso = async (id) => {
   } catch (err) {
     console.error('[obtenerDetelleCocedorProceso]', err);
     return null;
+  }
+}
+
+export const validarHoraXHora = async (payload) => {
+  try {
+    const res = await fetchApi(`${FUNCIONES_COCEDORES}/validar-supervisor`, 'POST', JSON.stringify(payload));
+    return res;
+  } catch (e) {
+    console.error(`Error al validar hora x hora`, e);
+    return { error: "Error al validar hora x hora" }
   }
 }
