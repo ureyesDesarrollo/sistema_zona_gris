@@ -9,25 +9,27 @@
  * @param {string} [options.type='success'] - Tipo de notificación (success, warning, error)
  */
 
-export const showToast = (msg, ok = true, options = {}) => {
+export const showToast = (msg, type = 'success',options = {}) => {
     const {
       duration = 5000,
       position = 'top-center',
       autohide = true,
-      type = 'success',
     } = options;
 
     console.log(type);
     const types = {
       success: {
+        msg: 'Éxito',
         class: 'success',
         icon: 'circle-check',
       },
       warning: {
+        msg: 'Advertencia',
         class: 'warning',
         icon: 'octagon-alert',
       },
       error: {
+        msg: 'Error',
         class: 'danger',
         icon: 'octagon-alert',
       },
@@ -41,7 +43,7 @@ export const showToast = (msg, ok = true, options = {}) => {
     const toastId = 'toast-' + Date.now();
     const typeClass = types[type]?.class || 'success';
     const toastIcon = types[type]?.icon || 'circle-check';
-  
+    const toastMessage = types[type]?.msg || 'Éxito';
     // Mapear posiciones a clases de Bootstrap
     const positionClasses = {
       'top-center': 'top-0 start-50 translate-middle-x',
@@ -72,7 +74,7 @@ export const showToast = (msg, ok = true, options = {}) => {
     toastEl.innerHTML = `
       <div class="toast-header bg-${typeClass} text-white border-0">
         <i data-lucide="${toastIcon}" class="me-2"></i>
-        <strong class="me-auto">${ok ? 'Éxito' : 'Error'}</strong>
+        <strong class="me-auto">${toastMessage}</strong>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
       </div>
       <div class="toast-body bg-light">
@@ -93,7 +95,7 @@ export const showToast = (msg, ok = true, options = {}) => {
       progressBar.style.transition = `width ${duration}ms linear`;
       setTimeout(() => {
         progressBar.style.width = '0';
-      }, 10);
+      }, 10); 
     }
   
     // Configurar toast de Bootstrap

@@ -11,7 +11,7 @@ const runAction = async (btn, reloadFn, fn) => {
         await fn();
         if (typeof reloadFn === "function") await reloadFn();
     } catch (e) {
-        showToast(e?.message || "Ocurrió un error inesperado.", false);
+        showToast(e?.message || "Ocurrió un error inesperado.", 'error');
     } finally {
         btn.disabled = false;
         btn.removeAttribute("data-in-flight");
@@ -30,13 +30,13 @@ export const ACTIONS = {
             title: "Motivo del paro por mantenimiento",
         });
         if (!motivo) {
-            showToast("Operación cancelada: motivo no proporcionado.", false);
+            showToast("Operación cancelada: motivo no proporcionado.", 'warning');
             return;
         }
 
         const usuario_id = getUserId();
         if (!usuario_id) {
-            showToast("No se pudo identificar al usuario.", false);
+            showToast("No se pudo identificar al usuario.", 'error');
             return;
         }
 
@@ -47,7 +47,7 @@ export const ACTIONS = {
             const paroRes = await registrarParo({ cocedor_id: id, motivo, usuario_id });
             if (!paroRes) throw new Error(paroRes?.error || "No se pudo registrar el paro.");
 
-            showToast("Cocedor puesto en mantenimiento.", true);
+            showToast("Cocedor puesto en mantenimiento.", 'success');
         });
     },
 
@@ -72,7 +72,7 @@ export const ACTIONS = {
 
         const usuario_id = getUserId();
         if (!usuario_id) {
-            showToast("No se pudo identificar al usuario.", false);
+            showToast("No se pudo identificar al usuario.", 'error');
             return;
         }
 
@@ -84,24 +84,24 @@ export const ACTIONS = {
             const res = await changeStatus(id, "ACTIVO");
             if (!res) throw new Error("No se pudo cambiar el estatus.");
 
-            showToast("Cocedor activado.", true);
+            showToast("Cocedor activado.", 'success');
         });
     },
 
     // Registrar (opcional; asegúrate de tener el endpoint)
     async registrar({ id, btn, reloadFn }) {
         const usuario_id = getUserId();
-        if (!usuario_id) { showToast("No se pudo identificar al usuario.", false); return; }
+        if (!usuario_id) { showToast("No se pudo identificar al usuario.", 'error'); return; }
 
         // Ahora data trae __modalId
         const data = await showCocedorCaptureModal({ cocedorId: id, title: "Registrar datos" });
-        if (!data) { showToast("Registro cancelado.", false); return; }
+        if (!data) { showToast("Registro cancelado.", 'warning'); return; }
 
         await runAction(btn, reloadFn, async () => {
             const res = await vaidarConsecutividadHoraXHora(data.relacion_id);
             if (!res?.ok){
-                showToast(res?.error || "Hora anterior no registrada", {type: 'danger'});
-                showToast("Se debe registrar la hora anterior para continuar, solicite al supervisor la autorización", options = {type: 'warning'});
+                showToast(res?.error || "Hora anterior no registrada", 'error');
+                showToast("Se debe registrar la hora anterior para continuar, solicite al supervisor la autorización", 'warning');
                 return false;
 
             }
@@ -138,7 +138,7 @@ export const ACTIONS = {
                 return;
             }
 
-            showToast("Registro guardado correctamente.", true);
+            showToast("Registro guardado correctamente.", 'success');
 
             // ✅ Cerrar modal SOLO en éxito
             const modalEl = document.getElementById(data.__modalId ?? `cocedor-modal-${id}`);
@@ -151,7 +151,7 @@ export const ACTIONS = {
     async validar({ id, btn, reloadFn }) {
         const usuario_id = getUserId();
         if (!usuario_id) {
-            showToast("No se pudo identificar al usuario.", false);
+            showToast("No se pudo identificar al usuario.", 'error');
             return;
         }
 
@@ -172,7 +172,7 @@ export const ACTIONS = {
 
             const ok = await validarHoraXHora(payload);
             if (!ok?.data) throw new Error(ok?.error || "No se pudo validar el registro.");
-            showToast("Registro validado correctamente.", true);
+            showToast("Registro validado correctamente.", 'success');
         });
     },
 };

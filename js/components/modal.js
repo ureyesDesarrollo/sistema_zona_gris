@@ -763,7 +763,7 @@ export async function showCocedorValidateModal(config = {}) {
       const el = getModalElements();
       if (!detalle) return modal.hide(), showToast("Error al cargar los detalles del cocedor.", false);
       const cocedorSeleccionado = `${detalle.cocedor}, ${detalle.agrupacion}`;
-      if (detalle.supervisor_validado === '0') {
+      if (Number(detalle.supervisor_validado) === 0) {
         el.indicatorStatusText.textContent = 'Pendiente de validación';
       } else {
         el.indicatorStatusText.textContent = 'Validado';
@@ -795,7 +795,7 @@ export async function showCocedorValidateModal(config = {}) {
       const confirm = () => {
         console.log('confirm');
         const el = getModalElements();
-        if (!el.observacionesSuper?.value) return showToast("Debe ingresar comentarios de validación.", false);
+        if (!el.observacionesSuper?.value) return showToast("Debe ingresar comentarios de validación.",'warning');
 
         const data = {
           cocedor: cocedorId,
