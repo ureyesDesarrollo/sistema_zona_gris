@@ -1,4 +1,4 @@
-import { obtenerCocedoresProcesoById, obtenerDetelleCocedorProceso, obtenerFlujos, obtenerTemperaturaCocedores } from "../services/cocedores.service.js";
+import { alerta, obtenerCocedoresProcesoById, obtenerDetelleCocedorProceso, obtenerFlujos, obtenerTemperaturaCocedores } from "../services/cocedores.service.js";
 import { debounce } from "../utils/debounce.js";
 import { formatter } from "../utils/formatter.js";
 import { getLocalDateTimeString } from "../utils/getLocalDateTimeString.js";
@@ -520,16 +520,6 @@ export async function showCocedorCaptureModal(config = {}) {
     { id: 'carga-cuero', min: 1, max: 20000, nombre: 'Carga de cuero' }
   ];
 
-  const validarCampos = () => {
-    let todoOk = true;
-    for (const campo of camposValidar) {
-      const input = document.getElementById(`${modalId}-${campo.id}`);
-      const error = document.getElementById(`${modalId}-${campo.id}-error`);
-      const valido = validarInputNumerico(input, error, campo);
-      if (!valido) todoOk = false;
-    }
-    return todoOk;
-  };
 
   const limpiarInput = (input, error) => {
     input.classList.remove('cocedor-form-control-invalid');
@@ -608,10 +598,63 @@ export async function showCocedorCaptureModal(config = {}) {
     const btnCancel = document.getElementById(`${modalId}-cancel`);
 
     const onConfirm = () => {
-      /* if (!validarCampos()) {
-        showToast("Corrige los campos marcados en rojo.", false);
-        return;
-      } */
+      const camposInvalidos = modalElement.querySelectorAll('.cocedor-form-control-invalid, .cocedor-form-control-alerta');
+
+      const camposInvalidosArray = {};
+      const facts = [];
+      facts.push({
+        titulo: "Cocedor:",
+        valor: cocedor
+      });
+
+      /* const payload = {
+        titulo: "🚨 Enviado desde El sistema con endpoint de php",
+        fecha: "2025-08-26 10:45",
+        facts: [
+          { titulo: "Cocedor", valor: "Cocedor 3" },
+          { titulo: "Parámetro", valor: "Temperatura" },
+          { titulo: "Valor", valor: "95°C" },
+          { titulo: "Rango", valor: "85°C - 90°C" },
+          { titulo: "Responsable", valor: "Juan Pérez" }
+        ]
+      }; */
+
+      camposInvalidos.forEach(input => {
+        const nombre = input.id?.split('-')[3];
+        const valor = input.value;
+        camposInvalidosArray[nombre] = valor;
+
+        const campo = camposValidar.find(c => c.id === nombre);
+        if (campo) {
+          facts.push({
+            titulo: '📊 Parámetro:',
+            valor: campo.nombre,
+          });
+          facts.push({
+            titulo: '📈 Valor detectado:',
+            valor: valor,
+          });
+          facts.push({
+            titulo: '✅ Rango permitido:',
+            valor: `${campo.min} - ${campo.max}`,
+          });
+        }
+      });
+      
+      facts.push({
+        titulo: "👤 Responsable de registro:",
+        valor: operador
+      });      
+
+      const payload = {
+        titulo: "🚨 Parámetros fuera o cerca del rango permitido",
+        fecha: new Date().toLocaleString('sv-SE'), // formato: 2025-08-26 15:30:45
+        facts: facts
+      };
+      console.log(camposInvalidosArray);
+      if (Object.keys(camposInvalidosArray).length > 0) {
+        alerta(payload);
+      }
 
       const getRadio = (name) => document.querySelector(`input[name="${modalId}-${name}"]:checked`)?.value || "";
       const getVal = (id) => document.getElementById(`${modalId}-${id}`)?.value || "";
@@ -694,20 +737,20 @@ export async function showCocedorValidateModal(config = {}) {
 
     const VALIDATION_RANGES = {
       flujo: {
-        Flujo_cocedor_1: { min: 140, max: 170 },
-        Flujo_cocedor_2: { min: 140, max: 170 },
-        Flujo_cocedor_3: { min: 140, max: 170 },
-        Flujo_cocedor_4: { min: 140, max: 170 },
-        Flujo_cocedor_5: { min: 140, max: 170 },
-        Flujo_cocedor_6: { min: 150, max: 190 },
-        Flujo_cocedor_7: { min: 150, max: 190 }
+        Flujo_cocedor_1: { min: 140, max: 170, nombre: 'Flujo cocedor 1' },
+        Flujo_cocedor_2: { min: 140, max: 170, nombre: 'Flujo cocedor 2' },
+        Flujo_cocedor_3: { min: 140, max: 170, nombre: 'Flujo cocedor 3' },
+        Flujo_cocedor_4: { min: 140, max: 170, nombre: 'Flujo cocedor 4' },
+        Flujo_cocedor_5: { min: 140, max: 170, nombre: 'Flujo cocedor 5' },
+        Flujo_cocedor_6: { min: 150, max: 190, nombre: 'Flujo cocedor 6' },
+        Flujo_cocedor_7: { min: 150, max: 190, nombre: 'Flujo cocedor 7' }
       },
-      tempEntrada: { min: 56, max: 70 },
-      tempSalida: { min: 55, max: 60 },
-      ph: { min: 3.0, max: 3.8 },
-      ntu: { min: 60, max: 600 },
-      solidos: { min: 1.5, max: 2.8 },
-      cargaCuero: { min: 1, max: 20000 }
+      tempEntrada: { min: 56, max: 70, nombre: 'T° entrada' },
+      tempSalida: { min: 55, max: 60, nombre: 'T° salida' },
+      ph: { min: 3.0, max: 3.8, nombre: 'pH' },
+      ntu: { min: 60, max: 600, nombre: 'NTU' },
+      solidos: { min: 1.5, max: 2.8, nombre: '% Sólidos' },
+      cargaCuero: { min: 1, max: 20000, nombre: 'Carga de cuero' }
     };
 
     function getModalElements() {
@@ -736,25 +779,17 @@ export async function showCocedorValidateModal(config = {}) {
       };
     }
 
-    function validateField(input, error, { min, max }) {
-      if (!input) console.log('No se proporciono input');
-      if (!error) console.log('No se proporciono error');
-      const value = parseFloat(input?.value);
-      const valid = !isNaN(value) && value >= min && value <= max;
-      input?.classList.toggle('cocedor-form-control-invalid', !valid);
-      if (error) error.textContent = valid ? '' : `El valor debe estar entre ${min} y ${max}. Ajuste el cocedor.`;
-      return valid;
-    }
-
     function validateAll({ cocedorType, ...elements }) {
+      console.log(cocedorType);
+      console.log(VALIDATION_RANGES.flujo[cocedorType]);
       return [
-        validateField(elements.inputTempEntrada, elements.inputErrorTempEntrada, VALIDATION_RANGES.tempEntrada),
-        validateField(elements.inputTempSalida, elements.inputErrorTempSalida, VALIDATION_RANGES.tempSalida),
-        validateField(elements.inputFlujo, elements.inputErrorFlujo, VALIDATION_RANGES.flujo[cocedorType] || VALIDATION_RANGES.flujo.Flujo_cocedor_1),
-        validateField(elements.inputPH, elements.inputErrorPH, VALIDATION_RANGES.ph),
-        validateField(elements.inputNTU, elements.inputErrorNTU, VALIDATION_RANGES.ntu),
-        validateField(elements.inputSolidos, elements.inputErrorSolidos, VALIDATION_RANGES.solidos),
-        validateField(elements.inputCargaCuero, elements.inputErrorCargaCuero, VALIDATION_RANGES.cargaCuero)
+        validarInputNumerico(elements.inputTempEntrada, elements.inputErrorTempEntrada, VALIDATION_RANGES.tempEntrada),
+        validarInputNumerico(elements.inputTempSalida, elements.inputErrorTempSalida, VALIDATION_RANGES.tempSalida),
+        validarInputNumerico(elements.inputFlujo, elements.inputErrorFlujo, VALIDATION_RANGES.flujo[cocedorType] || VALIDATION_RANGES.flujo.Flujo_cocedor_1),
+        validarInputNumerico(elements.inputPH, elements.inputErrorPH, VALIDATION_RANGES.ph),
+        validarInputNumerico(elements.inputNTU, elements.inputErrorNTU, VALIDATION_RANGES.ntu),
+        validarInputNumerico(elements.inputSolidos, elements.inputErrorSolidos, VALIDATION_RANGES.solidos),
+        validarInputNumerico(elements.inputCargaCuero, elements.inputErrorCargaCuero, VALIDATION_RANGES.cargaCuero)
       ].every(Boolean);
     }
 
@@ -786,7 +821,7 @@ export async function showCocedorValidateModal(config = {}) {
         el.indicatorStatus?.classList.replace('status-pending', 'status-validado');
         el.indicatorStatusText.textContent = 'Validado';
       }
-      validateAll({ cocedorType: config.cocedorType || 'Flujo_cocedor_1', ...el });
+      validateAll({ cocedorType: `Flujo_cocedor_${cocedorId}` || 'Flujo_cocedor_1', ...el });
     }, { once: true });
 
     modal.show();
@@ -795,7 +830,7 @@ export async function showCocedorValidateModal(config = {}) {
       const confirm = () => {
         console.log('confirm');
         const el = getModalElements();
-        if (!el.observacionesSuper?.value) return showToast("Debe ingresar comentarios de validación.",'warning');
+        if (!el.observacionesSuper?.value) return showToast("Debe ingresar comentarios de validación.", 'warning');
 
         const data = {
           cocedor: cocedorId,

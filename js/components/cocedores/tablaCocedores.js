@@ -67,9 +67,8 @@ const renderActionsSupervisor = (cocedorId, estatus) => {
 const renderActionsControlProcesos = (cocedorId, estatus, supervisor_validado) => {
   const isActivo = estatus === 'ACTIVO';
   const isMantenimiento = estatus === 'MANTENIMIENTO';
-  const validado = Number(supervisor_validado) !== 0; // true si sí está validado
+  const validado = supervisor_validado === null || Number(supervisor_validado) !== 0;
 
-  console.log(typeof supervisor_validado);
   return `
     <td class="actions-cell">
       <div class="btn-group btn-group-actions" role="group">
