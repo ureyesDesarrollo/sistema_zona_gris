@@ -619,10 +619,14 @@ export async function showCocedorCaptureModal(config = {}) {
         ]
       }; */
 
+      camposValidar.push({ id: 'flujo', min: minF, max: maxF, nombre: `Flujo cocedor ${cocedorId}` });
+      camposValidar.push({ id: 'temp-entrada', min: 57, max: 69, nombre: 'Temperatura de entrada' });
+      camposValidar.push({ id: 'temp-salida', min: 56, max: 59, nombre: 'Temperatura de salida' });
       camposInvalidos.forEach(input => {
         const nombre = input.id?.split('-')[3];
         const valor = input.value;
         camposInvalidosArray[nombre] = valor;
+
 
         const campo = camposValidar.find(c => c.id === nombre);
         if (campo) {

@@ -12,7 +12,7 @@ const isAdminOrGerente = (user) => {
     return p === 'admin' || p === 'administrador' || p === 'gerente zona gris';
 };
 
-const isSupervisor = (user) => getPerfilNombre(user) === 'supervisor zona gris';
+const isSupervisor = (user) => getPerfilNombre(user) === 'supervisor extraccion';
 const isControlProcesos = (user) => getPerfilNombre(user) === 'laboratorio';
 
 const tienePermiso = (modulo, permiso) => {
