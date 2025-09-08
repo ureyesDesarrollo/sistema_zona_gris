@@ -18,6 +18,7 @@ export async function init() {
     const tablaBody = document.getElementById('tabla-cocedores');
     const accionesColumn = document.getElementById('acciones-column');
 
+    console.log(btnIniciarProceso);
     if (btnIniciarProceso) {
         btnIniciarProceso.classList.toggle('d-none', !isSupervisor(user));
     }

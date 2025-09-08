@@ -81,7 +81,7 @@ export const ACTIONS = {
       })) || "";
     if (!observaciones) {
       showToast(
-        "Activación cancelada: observaciones no proporcionadas.","error");
+        "Activación cancelada: observaciones no proporcionadas.", "error");
       return;
     }
 
@@ -115,27 +115,28 @@ export const ACTIONS = {
       return;
     }
 
-    // Ahora data trae __modalId
+    // Obtener datos del modal
     const data = await showCocedorCaptureModal({
       cocedorId: id,
       title: "Registrar datos",
     });
+
     if (!data) {
       showToast("Registro cancelado.", "warning");
       return;
     }
 
     await runAction(btn, reloadFn, async () => {
-      const res = await vaidarConsecutividadHoraXHora(data.relacion_id);
-      if (!res?.ok) {
-        showToast(res?.error || "Hora anterior no registrada", "error");
-        showToast(
-          "Se debe registrar la hora anterior para continuar, solicite al supervisor la autorización",
-          "warning"
-        );
-        return false;
+      // 🔸 VALIDACIÓN DE CONSECUTIVIDAD
+      const consecutividadRes = await vaidarConsecutividadHoraXHora(data.relacion_id);
+
+      if (!consecutividadRes?.ok) {
+        const errorMsg = consecutividadRes?.error || "Hora anterior no registrada";
+        showToast(errorMsg, "error");
+        data.observaciones = errorMsg;
       }
 
+      // Construir payload
       const payload = {
         relacion_id: data.relacion_id,
         fecha_hora: data.fecha,
@@ -145,7 +146,6 @@ export const ACTIONS = {
         param_agua: data.flujo,
         param_temp_entrada: data.tempEntrada,
         param_temp_salida: data.tempSalida,
-        peso_consumido: data.cargaCuero,
         param_ph: data.ph,
         param_ntu: data.ntu,
         param_solidos: data.solidos,
@@ -155,29 +155,49 @@ export const ACTIONS = {
         observaciones: data.observaciones,
       };
 
+      // 🔸 INTENTAR GUARDAR
       const resDato = await registrarHoraXHora(payload);
 
+      // 🔸 MANEJAR RESPUESTA DEL BACKEND
       if (!resDato?.success) {
-        const msg = resDato?.errors
-          ? Object.entries(resDato.errors)
-              .map(
-                ([field, msgs]) => `• ${field}: ${[].concat(msgs).join(" ")}`
-              )
-              .join("\n")
-          : resDato?.error || "No se pudo guardar.";
-        showToast(msg, false);
-        // 🔸 Importante: NO cerramos el modal en error
+        let errorMsg = "No se pudo guardar el registro.";
+
+        // Si el backend devuelve errores de validación estructurados
+        if (resDato?.errors) {
+          if (typeof resDato.errors === 'object' && resDato.errors !== null) {
+            errorMsg = Object.entries(resDato.errors)
+              .map(([field, msgs]) => {
+                const messages = Array.isArray(msgs) ? msgs : [msgs];
+                return `• ${field}: ${messages.join(", ")}`;
+              })
+              .join("\n");
+          } else if (typeof resDato.errors === 'string') {
+            errorMsg = resDato.errors;
+          }
+        } else if (resDato?.error) {
+          errorMsg = resDato.error;
+        } else if (resDato?.message) {
+          errorMsg = resDato.message;
+        }
+
+        showToast(errorMsg, "error");
+        // 🔸 IMPORTANTE: NO cerrar modal cuando hay errores de validación
         return;
       }
 
+      // ✅ ÉXITO - Guardar exitoso
       showToast("Registro guardado correctamente.", "success");
 
-      // ✅ Cerrar modal SOLO en éxito
-      const modalEl = document.getElementById(
-        data.__modalId ?? `cocedor-modal-${id}`
-      );
-      const instance = modalEl ? bootstrap.Modal.getInstance(modalEl) : null;
-      instance?.hide();
+      // Cerrar modal solo en caso de éxito
+      const modalId = data.__modalId ?? `cocedor-modal-${id}`;
+      const modalEl = document.getElementById(modalId);
+
+      if (modalEl) {
+        const instance = bootstrap.Modal.getInstance(modalEl);
+        if (instance) {
+          instance.hide();
+        }
+      }
     });
   },
 
@@ -200,7 +220,8 @@ export const ACTIONS = {
     await runAction(btn, reloadFn, async () => {
       const payload = {
         id: usuario_id,
-        detalle_id: res?.relacion_id,
+        detalle_id: res?.detalle_id,
+        observaciones: res?.observaciones
       };
 
       const ok = await validarHoraXHora(payload);

@@ -9,38 +9,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="icon" href="assets/favicon.webp" type="image/x-icon">
+    <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/css/sessionTimer.css">
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/sidebar.css">
 </head>
-<style>
-    /* Variables globales */
-
-    :root {
-        /* Fallbacks si no existen en tu tema */
-        --border-radius: 14px;
-        --box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
-        --box-shadow-hover: 0 12px 28px rgba(0, 0, 0, .12);
-        --transition: .25s ease;
-    }
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    /* Lucide: evitar que el SVG intercepte el click para que haga click el botón/enlace padre */
-    button [data-lucide],
-    button .lucide,
-    .btn [data-lucide],
-    .btn .lucide,
-    a [data-lucide],
-    a .lucide {
-        pointer-events: none;
-    }
-</style>
-
 <body>
     <!-- Overlay que bloquea la UI -->
     <div id="sessionOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none"
@@ -139,6 +112,7 @@
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
     <script type="module" src="/js/index.js"></script>
+    <script src="/js/utils/valiadarDecimal.js"></script>
 </body>
 
 </html>

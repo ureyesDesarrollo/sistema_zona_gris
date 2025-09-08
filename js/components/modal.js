@@ -4,6 +4,7 @@ import { formatter } from "../utils/formatter.js";
 import { getLocalDateTimeString } from "../utils/getLocalDateTimeString.js";
 import { validarInputNumerico } from "../utils/isNumber.js";
 import { showToast } from "./toast.js";
+import { validate } from "../utils/observationValidate.js";
 
 export const showConfirm = (message, title = 'Confirmación', options = {}) => {
   return new Promise((resolve) => {
@@ -516,8 +517,7 @@ export async function showCocedorCaptureModal(config = {}) {
   const camposValidar = [
     { id: 'ph', min: 3.0, max: 3.8, nombre: 'pH' },
     { id: 'ntu', min: 60, max: 600, nombre: 'NTU' },
-    { id: 'solidos', min: 1.5, max: 2.8, nombre: '% Sólidos' },
-    { id: 'carga-cuero', min: 1, max: 20000, nombre: 'Carga de cuero' }
+    { id: 'solidos', min: 1.5, max: 2.8, nombre: '% Sólidos' }
   ];
 
 
@@ -527,7 +527,7 @@ export async function showCocedorCaptureModal(config = {}) {
   };
 
   const enlazarValidaciones = () => {
-    document.getElementById(`${modalId}-carga-cuero`).focus();
+    document.getElementById(`${modalId}-solidos`).focus();
     camposValidar.forEach(campo => {
       const input = document.getElementById(`${modalId}-${campo.id}`);
       const error = document.getElementById(`${modalId}-${campo.id}-error`);
@@ -563,7 +563,7 @@ export async function showCocedorCaptureModal(config = {}) {
   }
 
   const { agrupacion, relacion_id, cocedor } = datos;
-  const flujo = flujos[0][`Flujo_cocedor_${cocedorId}`];
+  const flujo = (flujos[0][`Flujo_cocedor_${cocedorId}`] == 0 || flujos[0][`Flujo_cocedor_${cocedorId}`] == null) ? 1 : flujos[0][`Flujo_cocedor_${cocedorId}`];
   const { COCEDORES_TEMPERATURA_DE_ENTRADA, COCEDORES_TEMPERATURA_DE_SALIDA } = temperatura;
 
   const setValor = (id, valor) => document.getElementById(`${modalId}-${id}`).value = valor;
@@ -597,7 +597,18 @@ export async function showCocedorCaptureModal(config = {}) {
     const btnConfirm = document.getElementById(`${modalId}-confirm`);
     const btnCancel = document.getElementById(`${modalId}-cancel`);
 
-    const onConfirm = () => {
+    btnConfirm.addEventListener("click", onConfirm);
+    btnCancel.addEventListener("click", onCancel);
+
+    function onConfirm() {
+      const getRadio = (name) => document.querySelector(`input[name="${modalId}-${name}"]:checked`)?.value || "";
+      const getVal = (id) => document.getElementById(`${modalId}-${id}`)?.value || "";
+
+      const ntuVal = parseFloat(getVal(`ntu`));
+      if (ntuVal > 1000) {
+        showToast("El valor de NTU debe ser menor o igual a 1000.", "warning");
+        return; // Detener sin cerrar modal
+      }
       const camposInvalidos = modalElement.querySelectorAll('.cocedor-form-control-invalid, .cocedor-form-control-alerta');
 
       const camposInvalidosArray = {};
@@ -620,10 +631,13 @@ export async function showCocedorCaptureModal(config = {}) {
       }; */
 
       camposValidar.push({ id: 'flujo', min: minF, max: maxF, nombre: `Flujo cocedor ${cocedorId}` });
-      camposValidar.push({ id: 'temp-entrada', min: 57, max: 69, nombre: 'Temperatura de entrada' });
-      camposValidar.push({ id: 'temp-salida', min: 56, max: 59, nombre: 'Temperatura de salida' });
+      camposValidar.push({ id: 'temp-entrada', min: 56, max: 70, nombre: 'Temperatura de entrada' });
+      camposValidar.push({ id: 'temp-salida', min: 55, max: 60, nombre: 'Temperatura de salida' });
+
+      console.log(camposInvalidos);
       camposInvalidos.forEach(input => {
-        const nombre = input.id?.split('-')[3];
+        const nombre = campoDesdeId(input.id ?? '', modalId);
+        console.log(nombre);
         const valor = input.value;
         camposInvalidosArray[nombre] = valor;
 
@@ -644,24 +658,20 @@ export async function showCocedorCaptureModal(config = {}) {
           });
         }
       });
-      
+
       facts.push({
         titulo: "👤 Responsable de registro:",
         valor: operador
-      });      
+      });
 
       const payload = {
         titulo: "🚨 Parámetros fuera o cerca del rango permitido",
         fecha: new Date().toLocaleString('sv-SE'), // formato: 2025-08-26 15:30:45
         facts: facts
       };
-      console.log(camposInvalidosArray);
       if (Object.keys(camposInvalidosArray).length > 0) {
         alerta(payload);
       }
-
-      const getRadio = (name) => document.querySelector(`input[name="${modalId}-${name}"]:checked`)?.value || "";
-      const getVal = (id) => document.getElementById(`${modalId}-${id}`)?.value || "";
 
       const data = {
         cocedor: getVal("cocedor"),
@@ -671,7 +681,6 @@ export async function showCocedorCaptureModal(config = {}) {
         flujo: getVal("flujo"),
         tempEntrada: getVal("temp-entrada"),
         tempSalida: getVal("temp-salida"),
-        cargaCuero: getVal("carga-cuero"),
         ph: getVal("ph"),
         ntu: getVal("ntu"),
         solidos: getVal("solidos"),
@@ -686,15 +695,17 @@ export async function showCocedorCaptureModal(config = {}) {
         showToast("Verifica muestra, agitación y desengrasador.", false);
         return;
       }
-
+      btnConfirm.removeEventListener("click", onConfirm);
+      btnCancel.removeEventListener("click", onCancel);
       modal.hide();
       resolve(data);
     };
 
-    const onCancel = () => resolve(null);
-
-    btnConfirm.addEventListener("click", onConfirm, { once: true });
-    btnCancel.addEventListener("click", onCancel, { once: true });
+    function onCancel() {
+      btnConfirm.removeEventListener("click", onConfirm);
+      btnCancel.removeEventListener("click", onCancel);
+      resolve(null);
+    }
   });
 }
 
@@ -753,12 +764,11 @@ export async function showCocedorValidateModal(config = {}) {
       tempSalida: { min: 55, max: 60, nombre: 'T° salida' },
       ph: { min: 3.0, max: 3.8, nombre: 'pH' },
       ntu: { min: 60, max: 600, nombre: 'NTU' },
-      solidos: { min: 1.5, max: 2.8, nombre: '% Sólidos' },
-      cargaCuero: { min: 1, max: 20000, nombre: 'Carga de cuero' }
+      solidos: { min: 1.5, max: 2.8, nombre: '% Sólidos' }
     };
 
     function getModalElements() {
-      const fields = ['flujo', 'temp-entrada', 'temp-salida', 'carga-cuero', 'solidos', 'ph', 'ntu'];
+      const fields = ['flujo', 'temp-entrada', 'temp-salida', 'solidos', 'ph', 'ntu'];
       const base = Object.fromEntries(
         fields.flatMap(name => {
           const camelName = camel(name);
@@ -793,7 +803,6 @@ export async function showCocedorValidateModal(config = {}) {
         validarInputNumerico(elements.inputPH, elements.inputErrorPH, VALIDATION_RANGES.ph),
         validarInputNumerico(elements.inputNTU, elements.inputErrorNTU, VALIDATION_RANGES.ntu),
         validarInputNumerico(elements.inputSolidos, elements.inputErrorSolidos, VALIDATION_RANGES.solidos),
-        validarInputNumerico(elements.inputCargaCuero, elements.inputErrorCargaCuero, VALIDATION_RANGES.cargaCuero)
       ].every(Boolean);
     }
 
@@ -814,7 +823,6 @@ export async function showCocedorValidateModal(config = {}) {
       el.inputFlujo.value = detalle.param_agua;
       el.inputTempEntrada.value = detalle.param_temp_entrada;
       el.inputTempSalida.value = detalle.param_temp_salida;
-      el.inputCargaCuero.value = detalle.peso_consumido;
       el.inputSolidos.value = detalle.param_solidos;
       el.inputPh.value = detalle.param_ph;
       el.inputNtu.value = detalle.param_ntu;
@@ -834,11 +842,23 @@ export async function showCocedorValidateModal(config = {}) {
       const confirm = () => {
         console.log('confirm');
         const el = getModalElements();
-        if (!el.observacionesSuper?.value) return showToast("Debe ingresar comentarios de validación.", 'warning');
+        const validation = validate(el.observacionesSuper?.value);
+
+        if (!validation.isValid) {
+          el.observacionesSuper.classList.add('cocedor-form-control-invalid');
+
+          const messages = {
+            'empty': "Debe ingresar comentarios de validación.",
+            'length': "Debe ingresar al menos 50 caracteres.",
+            'repetitive': "El texto es demasiado repetitivo. Ingrese comentarios significativos.",
+            'sequence': "Evite secuencias repetidas de caracteres."
+          };
+
+          return showToast(messages[validation.reason], 'warning');
+        }
 
         const data = {
-          cocedor: cocedorId,
-          relacion_id: el.inputRelacionId?.value,
+          detalle_id: el.inputRelacionId?.value,
           observaciones: el.observacionesSuper?.value || "N/A"
         };
 
@@ -869,3 +889,8 @@ function camel(str) {
   return str.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
 }
 
+
+function campoDesdeId(inputId, modalId) {
+  const prefix = `${modalId}-`;
+  return inputId.startsWith(prefix) ? inputId.slice(prefix.length) : inputId;
+}

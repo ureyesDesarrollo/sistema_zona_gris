@@ -5,7 +5,6 @@ export const fetchApi = async (url, method = 'GET', body = null) => {
         headers: { 'Content-Type': 'application/json'},
         body: body
       });
-  
       let json = {};
       try { json = await res.json(); } catch { /* sin cuerpo */ }
   

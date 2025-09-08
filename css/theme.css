@@ -1,0 +1,21 @@
+:root {
+    --border-radius: 14px;
+    --box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+    --box-shadow-hover: 0 12px 28px rgba(0, 0, 0, .12);
+    --transition: .25s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+button [data-lucide],
+button .lucide,
+.btn [data-lucide],
+.btn .lucide,
+a [data-lucide],
+a .lucide {
+    pointer-events: none;
+}

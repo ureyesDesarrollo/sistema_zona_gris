@@ -1,6 +1,6 @@
 // js/routes.js
 export const DEFAULT_ROUTE = '/dashboard/cocedores';
-export const VIEW_404 = 'pages/404.html';
+export const VIEW_404 = 'views/404.html';
 
 export const ROUTES = [
   { path: '/dashboard/cocedores', 

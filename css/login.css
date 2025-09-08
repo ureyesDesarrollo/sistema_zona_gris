@@ -295,8 +295,3 @@ body {
     font-size: 14px;
     animation: fadeIn 0.3s;
 }
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}

@@ -84,24 +84,14 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Carga de cuero</label>
-                                        <input type="text" class="cocedor-form-control solo-decimal"
-                                            id="${modalId}-carga-cuero"
-                                            onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" autocomplete="off">
-                                        <div class="cocedor-form-error" id="${modalId}-carga-cuero-error"></div>
-                                    </div>
-                                </div>
-                            </div>
+                            
                             <div class="row">
                                 <div class="col">
                                     <div class="cocedor-form-group">
                                         <label class="cocedor-form-label">%Solidos</label>
                                         <input type="text" class="cocedor-form-control solo-decimal"
-                                            id="${modalId}-solidos" maxlength="4"
-                                            onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46" autocomplete="off">
+                                            id="${modalId}-solidos" maxlength="3"
+                                            onkeypress="return validarDecimal(event, this)" autocomplete="off">
                                         <div class="cocedor-form-error" id="${modalId}-solidos-error"></div>
                                     </div>
                                 </div>
@@ -110,7 +100,7 @@
                                         <label class="cocedor-form-label">Nivel de pH</label>
                                         <input type="text" class="cocedor-form-control solo-decimal" id="${modalId}-ph"
                                             maxlength="4"
-                                            onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46" autocomplete="off">
+                                            onkeypress="return validarDecimal(event, this)" autocomplete="off">
                                         <div class="cocedor-form-error" id="${modalId}-ph-error"></div>
                                     </div>
                                 </div>
@@ -119,7 +109,7 @@
                                         <label class="cocedor-form-label">Turbidez (NTU)</label>
                                         <input type="text" class="cocedor-form-control solo-decimal" id="${modalId}-ntu"
                                             maxlength="4"
-                                            onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46" autocomplete="off">
+                                            onkeypress="return validarNTU(event, this)" autocomplete="off">
                                         <div class="cocedor-form-error" id="${modalId}-ntu-error"></div>
                                     </div>
                                 </div>
