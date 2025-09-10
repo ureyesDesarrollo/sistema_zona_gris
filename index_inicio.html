@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/sidebar.css">
 </head>
+
 <body>
     <!-- Overlay que bloquea la UI -->
     <div id="sessionOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none"
@@ -50,6 +51,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Spinner Overlay -->
+    <div id="global-loader" style="
+position: fixed;
+top: 0; left: 0;
+width: 100vw;
+height: 100vh;
+background-color: rgba(255, 255, 255, 0.8);
+display: none;
+align-items: center;
+justify-content: center;
+z-index: 9999;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
     <!-- NAVBAR -->
     <header class="header navbar navbar-expand navbar-light bg-white border-bottom fixed-top shadow-sm px-3 py-2">
         <div class="container-fluid">

@@ -1,7 +1,6 @@
 /* Card base */
 .card {
   border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   transform: translateZ(0);
   transition: transform var(--transition), box-shadow var(--transition),

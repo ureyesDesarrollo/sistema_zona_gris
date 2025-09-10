@@ -1,88 +1,116 @@
 // components/cocedores/cardsStatus.js
-export function renderCardsStatus({user, cocedores}) {
-    const container = document.getElementById('status-cards');
-    if (!container) {
-      console.warn('renderCardsStatus: no existe #status-cards en el DOM');
-      return;
-    }
-  
-    // 1) Inyecta el HTML de las tarjetas
-    container.innerHTML = getCardsMarkup();
-  
-    // 2) Lee el usuario y decide visibilidad
-    const perfil = user?.perfil || user?.perfil?.nombre || '';
-    const isAdmin = perfil === 'Admin';
-  
-    // 3) Muestra/oculta según perfil
-    container.classList.toggle('d-none', !isAdmin);
-  
-    const countActive = container.querySelector('#cocedoresCardCountActive');
-    const countMaintenance = container.querySelector('#cocedoresCardCountMaintenance');
-    const countAlerts = container.querySelector('#cocedoresCardCountAlerts');
-    // (opcional) también ocultar cada tarjeta si no es admin
-    [countActive, countMaintenance, countAlerts].forEach(el => {
-      el?.closest('.col')?.classList.toggle('d-none', !isAdmin);
-    });
-  
-    // (opcional) inicializa valores
-    if (countActive) countActive.textContent = countByStatus(cocedores, 'ACTIVO');
-    if (countMaintenance) countMaintenance.textContent = countByStatus(cocedores, 'MANTENIMIENTO');
-    if (countAlerts) countAlerts.textContent = alertasActivas(cocedores);
+
+/**
+ * Mapeo de configuraciones para cada tipo de tarjeta de estado.
+ */
+const CARD_CONFIGS = {
+  active: {
+    id: 'cocedoresCardCountActive',
+    text: 'Cocedores activos',
+    icon: 'flame',
+    color: 'success',
+    delay: '0.1s',
+    filter: (cocedor) => cocedor.estatus === 'ACTIVO'
+  },
+  alerts: {
+    id: 'cocedoresCardCountAlerts',
+    text: 'Cocedores sin verificar por supervisor',
+    icon: 'triangle-alert',
+    color: 'warning',
+    delay: '0.3s',
+    filter: (cocedor) => cocedor.supervisor_validado === '0'
+  },
+  maintenance: {
+    id: 'cocedoresCardCountMaintenance',
+    text: 'Mantenimiento',
+    icon: 'wrench',
+    color: 'danger',
+    delay: '0.4s',
+    filter: (cocedor) => cocedor.estatus === 'MANTENIMIENTO'
   }
-  
-  function getCardsMarkup() {
-    return `
-      <div class="col">
-        <div class="card h-100 fade-in" style="animation-delay: 0.1s">
-          <div class="card-body text-center">
-            <div class="mb-3">
-              <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center" style="width:60px;height:60px">
-                <i data-lucide="flame" style="width:40px; height:40px;"></i>
-              </div>
+};
+
+/**
+ * Genera el HTML de una tarjeta de estado individual.
+ * @param {Object} config - Objeto de configuración de la tarjeta.
+ * @returns {string} El marcado HTML de la tarjeta.
+ */
+const getCardMarkup = (config) => {
+  return `
+    <div class="col">
+      <div class="card h-100 fade-in" style="animation-delay: ${config.delay}">
+        <div class="card-body text-center">
+          <div class="mb-3">
+            <div class="bg-${config.color} bg-opacity-10 text-${config.color} rounded-circle d-inline-flex align-items-center justify-content-center" style="width:60px;height:60px">
+              <i data-lucide="${config.icon}" style="width:40px; height:40px;"></i>
             </div>
-            <h3 class="mb-1" id="cocedoresCardCountActive">...</h3>
-            <p class="text-muted mb-0">Cocedores activos</p>
           </div>
+          <h3 class="mb-1" id="${config.id}">...</h3>
+          <p class="text-muted mb-0">${config.text}</p>
         </div>
       </div>
-  
-      <div class="col">
-        <div class="card h-100 fade-in" style="animation-delay: 0.3s">
-          <div class="card-body text-center">
-            <div class="mb-3">
-              <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center" style="width:60px;height:60px">
-                <i data-lucide="triangle-alert" style="width:40px; height:40px;"></i>
-              </div>
-            </div>
-            <h3 class="mb-1" id="cocedoresCardCountAlerts">...</h3>
-            <p class="text-muted mb-0">Cocedores sin verificar por supervisor</p>
-          </div>
-        </div>
-      </div>
-  
-      <div class="col">
-        <div class="card h-100 fade-in" style="animation-delay: 0.4s">
-          <div class="card-body text-center">
-            <div class="mb-3">
-              <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width:60px;height:60px">
-                <i data-lucide="wrench" style="width:40px; height:40px;"></i>
-              </div>
-            </div>
-            <h3 class="mb-1" id="cocedoresCardCountMaintenance">...</h3>
-            <p class="text-muted mb-0">Mantenimiento</p>
-          </div>
-        </div>
-      </div>
-    `;
+    </div>
+  `;
+};
+
+/**
+ * Genera todo el marcado HTML para las tarjetas de estado.
+ * @returns {string} El marcado HTML de todas las tarjetas.
+ */
+const getCardsMarkup = () => {
+  return Object.values(CARD_CONFIGS).map(getCardMarkup).join('');
+};
+
+/**
+ * Renderiza las tarjetas de estado de los cocedores.
+ * @param {Object} params - Objeto que contiene user y cocedores.
+ * @param {Object} params.user - Objeto del usuario.
+ * @param {Array<Object>} params.cocedores - Array de objetos de cocedores.
+ */
+export function renderCardsStatus({ user, cocedores }) {
+  const container = document.getElementById('status-cards');
+  if (!container) {
+    console.warn('renderCardsStatus: no existe #status-cards en el DOM');
+    return;
   }
 
-  // --- Contador de estatus ---
-function countByStatus(arr, status) {
-    return Array.isArray(arr)
-      ? arr.filter(x => x.estatus === status).length
-      : 0;
+  // 1. Visibilidad y renderizado
+  const isAdmin = user?.perfil === 'Admin' || user?.perfil === 'Gerente zona gris';
+  container.innerHTML = getCardsMarkup();
+  container.classList.toggle('d-none', !isAdmin);
+
+  if (!isAdmin) {
+    return; // Detiene la ejecución si el usuario no es admin
   }
+
+  // 2. Actualización de contadores
+  // Cuentas solo si el usuario es Admin
+  const counts = {
+    active: 0,
+    alerts: 0,
+    maintenance: 0,
+  };
   
-  function alertasActivas(arr){
-   return Array.isArray(arr) ? arr.filter(x => x.supervisor_validado === '0').length : 0; 
+  if (Array.isArray(cocedores)) {
+    cocedores.forEach(cocedor => {
+      if (CARD_CONFIGS.active.filter(cocedor)) {
+        counts.active++;
+      }
+      if (CARD_CONFIGS.alerts.filter(cocedor)) {
+        counts.alerts++;
+      }
+      if (CARD_CONFIGS.maintenance.filter(cocedor)) {
+        counts.maintenance++;
+      }
+    });
   }
+
+  // 3. Inyección de los valores
+  const countActiveEl = container.querySelector(`#${CARD_CONFIGS.active.id}`);
+  const countAlertsEl = container.querySelector(`#${CARD_CONFIGS.alerts.id}`);
+  const countMaintenanceEl = container.querySelector(`#${CARD_CONFIGS.maintenance.id}`);
+  
+  if (countActiveEl) countActiveEl.textContent = counts.active;
+  if (countAlertsEl) countAlertsEl.textContent = counts.alerts;
+  if (countMaintenanceEl) countMaintenanceEl.textContent = counts.maintenance;
+}

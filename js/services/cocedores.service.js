@@ -29,8 +29,7 @@ export async function fetchProximaRevision() {
 export const changeStatus = async (id, estatus) => {
   try {
     const res = await fetchApi(`${CATALOGOS_COCEDORES}/${id}/estatus`, 'PUT', JSON.stringify({ estatus }));
-    if (!res.success) throw new Error(res.error);
-    return res.data;
+    return res;
   } catch (e) {
     console.error(`Error en changeStatus del cocedor ${id} a ${estatus}`, e);
     return { error: "Error al cambiar estatus de cocedor" }
@@ -40,8 +39,7 @@ export const changeStatus = async (id, estatus) => {
 export const registrarParo = async (payload) => {
   try {
     const res = await fetchApi(`${FUNCIONES_COCEDORES}/paro`, 'POST', JSON.stringify(payload));
-    if (!res.success) throw new Error(res.error);
-    return res.data;
+    return res;
   } catch (e) {
     console.error(`Error en registrarParo del cocedor ${payload.id}`, e);
     return { error: "Error al registrar paro de cocedor" }
@@ -51,7 +49,6 @@ export const registrarParo = async (payload) => {
 export const finalizarParo = async (payload) => {
   try {
     const res = await fetchApi(`${FUNCIONES_COCEDORES}/finalizar-paro`, 'POST', JSON.stringify(payload));
-    if (!res.success) throw new Error(res.error);
     return res;
   } catch (e) {
     console.error(`Error en finalizarParo del cocedor ${payload.id}`, e);
@@ -63,8 +60,7 @@ export const finalizarParo = async (payload) => {
 export const fetchProcesos = async () => {
   try {
     const res = await fetchApi(`${FUNCIONES_COCEDORES}/procesos-disponibles`);
-    if (!res.success) throw new Error(res.error);
-    return res.data;
+    return res;
   } catch (err) {
     console.error('[fetchProcesos]', err);
     return null;
@@ -74,8 +70,7 @@ export const fetchProcesos = async () => {
 export async function iniciarProcesos(payload) {
   try {
     const res = await fetchApi(`${FUNCIONES_COCEDORES}/combinar-procesos`, 'POST', JSON.stringify(payload));
-    if (!res.success) throw new Error(res.error);
-    return res.data;
+    return res;
   } catch (e) {
     console.error(`Error al iniciar procesos`, e);
     return { error: "Error al iniciar procesos" }
@@ -85,8 +80,7 @@ export async function iniciarProcesos(payload) {
 export const obtenerCocedoresProcesoById = async (id) => {
   try {
     const res = await fetchApi(`${FUNCIONES_COCEDORES}/obtener-cocedores-proceso-by-id/${id}`);
-    if (!res.success) throw new Error(res.error);
-    return res.data;
+    return res;
   } catch (err) {
     console.error('[obtenerCocedoresProceso]', err);
     return null;
@@ -115,11 +109,10 @@ export const obtenerTemperaturaCocedores = async () => {
   }
 }
 
-export const vaidarConsecutividadHoraXHora = async (id) => {
+export const validarConsecutividadHoraXHora = async (id) => {
   try {
     const now = new Date();
   const fechaHora = getLocalDateTimeString(now);
-    console.log(fechaHora);
     const res = await fetchApi(`${FUNCIONES_COCEDORES}/validar-consecutividad/${id}/${fechaHora}`);
     if (!res.success) throw new Error(res.error);
     return res.data;
@@ -174,8 +167,7 @@ export const finalizarMezcla = async (payload) => {
 export const obtenerMezclaEnProceso = async() =>  { 
   try {
     const res = await fetchApi(`${FUNCIONES_COCEDORES}/obtener-mezcla-en-proceso`);
-    if (!res.success) throw new Error(res.error);
-    return res.data;
+    return res;
   } catch (err) {
     console.error('[obtenerMezclaEnProceso]', err);
     return null;
@@ -185,8 +177,7 @@ export const obtenerMezclaEnProceso = async() =>  {
 export const obtenerMezclaById = async (id) => {
   try {
     const res = await fetchApi(`${FUNCIONES_COCEDORES}/obtener-mezcla-by-id/${id}`);
-    if (!res.success) throw new Error(res.error);
-    return res.data;
+    return res;
   } catch (err) {
     console.error('[obtenerMezclaById]', err);
     return null;
@@ -200,7 +191,6 @@ export const alerta = async (payload) => {
       headers: { 'Content-Type': 'application/json'},
       body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error(res.statusText);
     return res;
   }catch(e){
     console.error(`Error al enviar alerta`, e);

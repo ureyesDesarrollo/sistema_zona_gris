@@ -1,122 +1,106 @@
 /**
- * Muestra una notificación toast con iconos y temporizador progresivo
- * @param {string} msg - Mensaje a mostrar
- * @param {boolean} [ok=true] - Tipo de notificación (éxito/error)
- * @param {Object} [options={}] - Opciones adicionales
- * @param {number} [options.duration=5000] - Duración en milisegundos
- * @param {string} [options.position='top-center'] - Posición (top-center, bottom-right, etc.)
- * @param {boolean} [options.autohide=true] - Ocultar automáticamente
- * @param {string} [options.type='success'] - Tipo de notificación (success, warning, error)
+ * js/components/toast.js
+ * Muestra una notificación toast con iconos y temporizador progresivo.
  */
+const TOAST_CONFIGS = {
+  success: { title: 'Éxito', class: 'success', icon: 'circle-check' },
+  warning: { title: 'Advertencia', class: 'warning', icon: 'octagon-alert' },
+  error: { title: 'Error', class: 'danger', icon: 'octagon-alert' },
+};
 
-export const showToast = (msg, type = 'success', options = {}) => {
-  const {
-    duration = 5000,
-    position = 'top-center',
-    autohide = true,
-  } = options;
+const POSITION_CLASSES = {
+  'top-center': 'top-0 start-50 translate-middle-x',
+  'top-right': 'top-0 end-0',
+  'bottom-right': 'bottom-0 end-0',
+  'bottom-center': 'bottom-0 start-50 translate-middle-x'
+};
 
-  const types = {
-    success: {
-      msg: 'Éxito',
-      class: 'success',
-      icon: 'circle-check',
-    },
-    warning: {
-      msg: 'Advertencia',
-      class: 'warning',
-      icon: 'octagon-alert',
-    },
-    error: {
-      msg: 'Error',
-      class: 'danger',
-      icon: 'octagon-alert',
-    },
-  };
+const MAX_TOASTS = 5;
+let toastContainer = null;
 
-  if (!types[type]) {
-    console.warn(`Tipo de toast no válido: ${type}. Usando 'success' por defecto.`);
-    type = 'success';
-  }
-
-  const toastId = 'toast-' + Date.now();
-  const typeClass = types[type]?.class || 'success';
-  const toastIcon = types[type]?.icon || 'circle-check';
-  const toastMessage = types[type]?.msg || 'Éxito';
-  // Mapear posiciones a clases de Bootstrap
-  const positionClasses = {
-    'top-center': 'top-0 start-50 translate-middle-x',
-    'top-right': 'top-0 end-0',
-    'bottom-right': 'bottom-0 end-0',
-    'bottom-center': 'bottom-0 start-50 translate-middle-x'
-  };
-
-  const positionClass = positionClasses[position] || positionClasses['top-center'];
-
-  // Crear contenedor de toast si no existe
-  let toastContainer = document.getElementById('toast-container');
+/**
+ * Crea o devuelve el contenedor principal para los toasts.
+ * @param {string} position La posición del contenedor.
+ * @returns {HTMLElement} El elemento contenedor.
+ */
+const getOrCreateToastContainer = (position) => {
   if (!toastContainer) {
     toastContainer = document.createElement('div');
     toastContainer.id = 'toast-container';
-    toastContainer.className = 'position-fixed p-3';
     toastContainer.style.zIndex = '1200';
     document.body.appendChild(toastContainer);
   }
+  toastContainer.className = `position-fixed p-3 ${POSITION_CLASSES[position] || POSITION_CLASSES['top-center']}`;
+  return toastContainer;
+};
 
-  const MAX_TOASTS = 5;
-  if (toastContainer.children.length >= MAX_TOASTS) {
-    toastContainer.firstChild.remove(); // Elimina el más antiguo
+/**
+ * Elimina el toast más antiguo si se excede el límite.
+ * @param {HTMLElement} container El contenedor de toasts.
+ */
+const removeOldestToast = (container) => {
+  if (container.children.length >= MAX_TOASTS) {
+    container.firstChild.remove();
   }
+};
 
+/**
+ * Muestra una notificación toast con iconos y temporizador progresivo.
+ * @param {string} msg Mensaje a mostrar.
+ * @param {string} [type='success'] Tipo de notificación (success, warning, error).
+ * @param {Object} [options={}] Opciones adicionales.
+ * @param {number} [options.duration=5000] Duración en milisegundos.
+ * @param {string} [options.position='top-center'] Posición (top-center, etc.).
+ * @param {boolean} [options.autohide=true] Ocultar automáticamente.
+ */
+export const showToast = (msg, type = 'success', options = {}) => {
+  const { duration = 5000, position = 'top-center', autohide = true } = options;
+  const config = TOAST_CONFIGS[type] || TOAST_CONFIGS.success;
 
-  // Crear elemento toast
+  const container = getOrCreateToastContainer(position);
+  removeOldestToast(container);
+
   const toastEl = document.createElement('div');
-  toastEl.id = toastId;
   toastEl.className = `toast show mb-3`;
   toastEl.setAttribute('role', 'alert');
   toastEl.setAttribute('aria-live', 'assertive');
   toastEl.setAttribute('aria-atomic', 'true');
   toastEl.innerHTML = `
-      <div class="toast-header bg-${typeClass} text-white border-0">
-        <i data-lucide="${toastIcon}" class="me-2"></i>
-        <strong class="me-auto">${toastMessage}</strong>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-      </div>
-      <div class="toast-body bg-light">
-        ${msg}
-      </div>
-      ${autohide ? `<div class="toast-progress bg-${typeClass}"></div>` : ''}
-    `;
+    <div class="toast-header bg-${config.class} text-white border-0">
+      <i data-lucide="${config.icon}" class="me-2"></i>
+      <strong class="me-auto">${config.title}</strong>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+    <div class="toast-body bg-light">${msg}</div>
+    ${autohide ? `<div class="toast-progress bg-${config.class}"></div>` : ''}
+  `;
 
-  // Estilos dinámicos para la posición
-  toastContainer.className = `position-fixed p-3 ${positionClass}`;
-  toastContainer.appendChild(toastEl);
+  container.appendChild(toastEl);
 
-  // Barra de progreso para autohide
   if (autohide) {
     const progressBar = toastEl.querySelector('.toast-progress');
-    progressBar.style.height = '3px';
-    progressBar.style.width = '100%';
-    progressBar.style.transition = `width ${duration}ms linear`;
-    setTimeout(() => {
-      progressBar.style.width = '0';
-    }, 10);
+    if (progressBar) {
+      progressBar.style.height = '3px';
+      progressBar.style.width = '100%';
+      // Forzar el "reflow" para que la transición sea visible
+      toastEl.offsetWidth;
+      progressBar.style.transition = `width ${duration}ms linear`;
+      progressBar.style.width = '0%';
+    }
   }
 
-  // Configurar toast de Bootstrap
   const bsToast = new bootstrap.Toast(toastEl, {
     autohide,
-    delay: autohide ? duration : undefined
+    delay: autohide ? duration : undefined,
   });
 
-  // Eliminar el toast del DOM cuando se oculta
   toastEl.addEventListener('hidden.bs.toast', () => {
     toastEl.remove();
-    // Eliminar contenedor si no hay más toasts
-    if (toastContainer.children.length === 0) {
-      toastContainer.remove();
+    if (container.children.length === 0) {
+      container.remove();
+      toastContainer = null;
     }
   });
 
   bsToast.show();
-}
+};

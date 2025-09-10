@@ -24,9 +24,9 @@
                                     <div class="cocedor-form-group">
                                         <label class="cocedor-form-label">Cocedor seleccionado</label>
                                         <input type="text" class="cocedor-form-control" id="${modalId}-cocedor" readonly
-                                            style="color: var(--cocedor-dark-gray); pointer-events: none;">
+                                            style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="cocedor">
                                         <input type="text" class="cocedor-form-control" id="${modalId}-relacion-id" readonly
-                                            style="color: var(--cocedor-dark-gray); pointer-events: none;" hidden>
+                                            style="color: var(--cocedor-dark-gray); pointer-events: none;" hidden data-modal-value="relacion-id">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -34,7 +34,7 @@
                                         <label class="cocedor-form-label">Fecha y hora</label>
                                         <input type="datetime-local" class="cocedor-form-control" id="${modalId}-fecha"
                                             value="" readonly
-                                            style="color: var(--cocedor-dark-gray); pointer-events: none;">
+                                            style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="fecha">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -42,13 +42,13 @@
                                         <label class="cocedor-form-label">Operador</label>
                                         <input type="text" class="cocedor-form-control" id="${modalId}-operador"
                                             value="" readonly
-                                            style="color: var(--cocedor-dark-gray); pointer-events: none;">
+                                            style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="operador">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="validation-status status-pending" id="status-indicator">
-                                <span id="status-indicator-text"></span>
+                                <span id="status-indicator-text" data-modal-value="status-indicator-text"></span>
                             </div>
                         </div>
                     </div>
@@ -66,37 +66,37 @@
                                 <div class="parameter-item">
                                     <label class="cocedor-form-label">Flujo (LPM)</label>
                                     <input type="text" class="cocedor-form-control" id="${modalId}-flujo" readonly
-                                        style="color: var(--cocedor-dark-gray); pointer-events: none;">
+                                        style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="flujo">
                                     <small id="${modalId}-flujo-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
                                     <label class="cocedor-form-label">Temp. Entrada (°C)</label>
                                     <input type="text" class="cocedor-form-control" id="${modalId}-temp-entrada"
-                                        readonly style="color: var(--cocedor-dark-gray); pointer-events: none;">
+                                        readonly style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="temp-entrada">
                                     <small id="${modalId}-temp-entrada-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
                                     <label class="cocedor-form-label">Temp. Salida (°C)</label>
                                     <input type="text" class="cocedor-form-control" id="${modalId}-temp-salida" readonly
-                                        style="color: var(--cocedor-dark-gray); pointer-events: none;">
+                                        style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="temp-salida">
                                     <small id="${modalId}-temp-salida-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
                                     <label class="cocedor-form-label">%Sólidos</label>
                                     <input type="text" class="cocedor-form-control" id="${modalId}-solidos" readonly
-                                        style="color: var(--cocedor-dark-gray); pointer-events: none;">
+                                        style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="solidos">
                                     <small id="${modalId}-solidos-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
                                     <label class="cocedor-form-label">Nivel de pH</label>
                                     <input type="text" class="cocedor-form-control" id="${modalId}-ph" readonly
-                                        style="color: var(--cocedor-dark-gray); pointer-events: none;">
+                                        style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="ph">
                                     <small id="${modalId}-ph-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
                                     <label class="cocedor-form-label">Turbidez (NTU)</label>
                                     <input type="text" class="cocedor-form-control" id="${modalId}-ntu" readonly
-                                        style="color: var(--cocedor-dark-gray); pointer-events: none;">
+                                        style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="ntu">
                                     <small id="${modalId}-ntu-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                             </div>
@@ -114,7 +114,7 @@
                             <div class="cocedor-form-group">
                                 <textarea class="cocedor-form-control" rows="3" id="${modalId}-observaciones"
                                     placeholder="Registre cualquier observación relevante..."
-                                    style="color: var(--cocedor-dark-gray); pointer-events: none;" readonly></textarea>
+                                    style="color: var(--cocedor-dark-gray); pointer-events: none;" readonly data-modal-value="observaciones"></textarea>
                             </div>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                                             <label class="cocedor-form-label">
                                                 Validado por supervisor en turno
                                             </label>
-                                            <input type="text" class="cocedor-form-control" id="${modalId}-validado-por" readonly>
+                                            <input type="text" class="cocedor-form-control" id="${modalId}-validado-por" readonly data-modal-value="supervisor-validado">
                                         </div>
                                     </div>
                                 </div>
@@ -144,7 +144,7 @@
                                         Comentarios de validación *
                                     </label>
                                     <textarea class="cocedor-form-control cocedor-textarea" id="comentarios-validacion"
-                                        placeholder="Ingrese comentarios detallados sobre la validación..."></textarea>
+                                        placeholder="Ingrese comentarios detallados sobre la validación..." data-modal-value="comentarios-validacion"></textarea>
                                     <small class="text-muted">
                                         Los comentarios son obligatorios y quedarán registrados en el historial del
                                         sistema.
@@ -158,8 +158,8 @@
                     <!-- Action Bar -->
                     <div class="cocedor-action-bar">
                         <button type="button" class="cocedor-btn cocedor-btn-outline"
-                            data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="cocedor-btn cocedor-btn-primary btn-confirm" id="${modalId}-confirm">Validar
+                            data-bs-dismiss="modal" data-modal-cancel>Cancelar</button>
+                        <button type="button" class="cocedor-btn cocedor-btn-primary btn-confirm" id="${modalId}-confirm" data-modal-confirm>Validar
                             registro</button>
                     </div>
                 </div>

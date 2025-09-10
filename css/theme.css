@@ -1,16 +1,27 @@
-:root {
+/* =========================
+   VARIABLES GLOBALES
+   ========================= */
+   :root {
     --border-radius: 14px;
     --box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
     --box-shadow-hover: 0 12px 28px rgba(0, 0, 0, .12);
     --transition: .25s ease;
 }
 
+/* =========================
+   RESET BÁSICO
+   ========================= */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* =========================
+   ICONOS (Lucide/Bootstrap)
+   ========================= */
+/* Evita que los íconos dentro de botones y enlaces interfieran 
+   con los eventos de clic, mejora la accesibilidad */
 button [data-lucide],
 button .lucide,
 .btn [data-lucide],
@@ -18,4 +29,38 @@ button .lucide,
 a [data-lucide],
 a .lucide {
     pointer-events: none;
+}
+
+/* =========================
+   TIPOGRAFÍA BASE
+   ========================= */
+/* Fuente base con buena legibilidad */
+body {
+    font-size: 1rem;      /* 16px base */
+    line-height: 1.5;     /* Altura de línea recomendada */
+}
+
+/* Jerarquía tipográfica consistente */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+/* =========================
+   ACCESIBILIDAD / MOTION
+   ========================= */
+/* Respeta las preferencias del usuario con movilidad reducida.
+   Elimina transiciones y animaciones si está activado "reducir movimiento". */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
 }
