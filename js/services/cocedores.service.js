@@ -1,4 +1,4 @@
-import { FUNCIONES_COCEDORES, CATALOGOS_COCEDORES, BASE_API } from "../config.js";
+import { FUNCIONES_COCEDORES, CATALOGOS_COCEDORES, BASE_API, REPORTES } from "../config.js";
 import { fetchApi } from "../utils/api.js"
 import { getLocalDateTimeString } from "../utils/getLocalDateTimeString.js";
 
@@ -195,5 +195,15 @@ export const alerta = async (payload) => {
   }catch(e){
     console.error(`Error al enviar alerta`, e);
     return { error: "Error al enviar alerta"};
+  }
+}
+
+export const obtenerReporte = async (payload) => {
+  try {
+    const res = await fetchApi(`${REPORTES}/cocedores`, 'POST', JSON.stringify(payload));
+    return res;
+  }catch(e){
+    console.error(`Error al obtener reporte`, e);
+    return { error: "Error al obtener reporte"};
   }
 }
