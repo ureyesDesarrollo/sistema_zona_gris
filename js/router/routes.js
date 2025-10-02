@@ -17,7 +17,7 @@ export const ROUTES = [
     url: 'views/clarificador.html',
     title: 'Clarificador',
     icon: 'funnel',
-    module: '../pages/clarificador.js',
+    module: '../pages/clarificador/clarificador.js',
     permission: 'Clarificador.listar' // Ejemplo: permiso para listar la vista de clarificador
   },
   { 

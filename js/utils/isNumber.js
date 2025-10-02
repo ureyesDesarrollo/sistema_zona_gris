@@ -5,14 +5,14 @@ export function validarInputNumerico(inputEl, inputError, { min, max, nombre }) 
 
   // Limpieza previa de clases
   inputEl.classList.remove(
-    "cocedor-form-control-valid",
-    "cocedor-form-control-invalid",
-    "cocedor-form-control-alerta"
+    "custom-form-control-valid",
+    "custom-form-control-invalid",
+    "custom-form-control-alerta"
   );
 
   // Si no es número válido
   if (isNaN(value)) {
-    inputEl.classList.add("cocedor-form-control-invalid");
+    inputEl.classList.add("custom-form-control-invalid");
     inputError.style.display = "block";
     inputError.textContent = `Debe ingresar un valor válido para ${nombre}.`;
     return false;
@@ -20,7 +20,7 @@ export function validarInputNumerico(inputEl, inputError, { min, max, nombre }) 
 
   // Fuera de rango
   if (value < min || value > max) {
-    inputEl.classList.add("cocedor-form-control-invalid");
+    inputEl.classList.add("custom-form-control-invalid");
     inputError.style.display = "block";
     inputError.textContent = `${nombre} debe estar entre ${min} y ${max}.`;
     return false;
@@ -32,14 +32,14 @@ export function validarInputNumerico(inputEl, inputError, { min, max, nombre }) 
   const cercaDelMax = value <= max && value >= max - margen;
 
   if (cercaDelMin || cercaDelMax) {
-    inputEl.classList.add("cocedor-form-control-alerta");
+    inputEl.classList.add("custom-form-control-alerta");
     inputError.style.display = "block";
     inputError.textContent = `${nombre} está cerca del límite permitido (${min} - ${max}). Por favor, verifique.`;
     return true;
   }
 
   // Valor correcto, sin alertas
-  inputEl.classList.add("cocedor-form-control-valid");
+  inputEl.classList.add("custom-form-control-valid");
   inputError.style.display = "none";
   return true;
 }

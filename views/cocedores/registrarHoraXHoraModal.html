@@ -9,38 +9,38 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body p-0 cocedor-modal-content">
-                <div class="cocedor-container">
+            <div class="modal-body p-0 custom-modal-content">
+                <div class="custom-modal-container">
                     <!-- Card de Contexto -->
-                    <div class="cocedor-card mt-4">
-                        <div class="cocedor-card-header">
-                            <div class="cocedor-card-header-icon">
+                    <div class="custom-modal-card mt-4">
+                        <div class="custom-modal-card-header">
+                            <div class="custom-modal-card-header-icon">
                                 <i data-lucide="notebook-tabs"></i>
                             </div>
                             <span>Información del Registro</span>
                         </div>
-                        <div class="cocedor-card-body">
-                            <div class="cocedor-form-group">
-                                <label class="cocedor-form-label">Cocedor seleccionado</label>
-                                <input type="text" class="cocedor-form-control" id="${modalId}-cocedor" readonly
-                                style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="cocedor">
-                                <input type="text" class="cocedor-form-control" id="${modalId}-relacion-id" readonly 
+                        <div class="custom-modal-card-body">
+                            <div class="custom-form-group">
+                                <label class="custom-form-label">Cocedor seleccionado</label>
+                                <input type="text" class="custom-form-control" id="${modalId}-cocedor" readonly
+                                style="color: var(--custom-dark-gray); pointer-events: none;" data-modal-value="cocedor">
+                                <input type="text" class="custom-form-control" id="${modalId}-relacion-id" readonly 
                                      data-modal-value="relacion-id" hidden>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Fecha y hora</label>
-                                        <input type="datetime-local" class="cocedor-form-control" id="${modalId}-fecha"
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Fecha y hora</label>
+                                        <input type="datetime-local" class="custom-form-control" id="${modalId}-fecha"
                                         readonly
-                                        style="color: var(--cocedor-dark-gray); pointer-events: none;" data-modal-value="fecha">
+                                        style="color: var(--custom-dark-gray); pointer-events: none;" data-modal-value="fecha">
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Operador</label>
-                                        <input type="text" class="cocedor-form-control" id="${modalId}-operador"
-                                            readonly style="color: var(--cocedor-dark-gray); pointer-events: none;"
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Operador</label>
+                                        <input type="text" class="custom-form-control" id="${modalId}-operador"
+                                            readonly style="color: var(--custom-dark-gray); pointer-events: none;"
                                             data-modal-value="operador">
                                     </div>
                                 </div>
@@ -49,78 +49,78 @@
                     </div>
 
                     <!-- Card de Parámetros -->
-                    <div class="cocedor-card">
-                        <div class="cocedor-card-header">
-                            <div class="cocedor-card-header-icon">
+                    <div class="custom-modal-card">
+                        <div class="custom-modal-card-header">
+                            <div class="custom-modal-card-header-icon">
                                 <i data-lucide="chart-line"></i>
                             </div>
                             <span>Parámetros Técnicos</span>
                         </div>
-                        <div class="cocedor-card-body">
+                        <div class="custom-modal-card-body">
                             <div class="row">
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Flujo (LPM)</label>
-                                        <input type="number" class="cocedor-form-control solo-decimal"
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Flujo (LPM)</label>
+                                        <input type="number" class="custom-form-control solo-decimal"
                                             id="${modalId}-flujo" step="0.1" readonly
-                                            style="color: var(--cocedor-dark-gray); pointer-events: none;"
+                                            style="color: var(--custom-dark-gray); pointer-events: none;"
                                             data-modal-value="flujo">
-                                        <div class="cocedor-form-error" id="${modalId}-flujo-error" data-modal-error="flujo"></div>
+                                        <div class="custom-form-error" id="${modalId}-flujo-error" data-modal-error="flujo"></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Temperatura Entrada (°C)</label>
-                                        <input type="number" class="cocedor-form-control solo-decimal"
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Temperatura Entrada (°C)</label>
+                                        <input type="number" class="custom-form-control solo-decimal"
                                             id="${modalId}-temp-entrada" step="0.1" readonly
-                                            style="color: var(--cocedor-dark-gray); pointer-events: none;"
+                                            style="color: var(--custom-dark-gray); pointer-events: none;"
                                             data-modal-value="temp-entrada">
-                                        <div class="cocedor-form-error" id="${modalId}-temp-entrada-error" data-modal-error="temp-entrada"></div>
+                                        <div class="custom-form-error" id="${modalId}-temp-entrada-error" data-modal-error="temp-entrada"></div>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Temperatura Salida (°C)</label>
-                                        <input type="number" class="cocedor-form-control solo-decimal"
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Temperatura Salida (°C)</label>
+                                        <input type="number" class="custom-form-control solo-decimal"
                                             id="${modalId}-temp-salida" step="0.1" readonly
-                                            style="color: var(--cocedor-dark-gray); pointer-events: none;"
+                                            style="color: var(--custom-dark-gray); pointer-events: none;"
                                             data-modal-value="temp-salida">
-                                        <div class="cocedor-form-error" id="${modalId}-temp-salida-error" data-modal-error="temp-salida"></div>
+                                        <div class="custom-form-error" id="${modalId}-temp-salida-error" data-modal-error="temp-salida"></div>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="row">
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">%Solidos</label>
-                                        <input type="text" class="cocedor-form-control solo-decimal"
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">%Solidos</label>
+                                        <input type="text" class="custom-form-control solo-decimal"
                                             id="${modalId}-solidos" maxlength="3"
                                             onkeypress="return validarDecimal(event, this)" autocomplete="off"
                                             data-modal-value="solidos">
-                                        <div class="cocedor-form-error" id="${modalId}-solidos-error" data-modal-error="solidos"></div>
+                                        <div class="custom-form-error" id="${modalId}-solidos-error" data-modal-error="solidos"></div>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Nivel de pH</label>
-                                        <input type="text" class="cocedor-form-control solo-decimal" id="${modalId}-ph"
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Nivel de pH</label>
+                                        <input type="text" class="custom-form-control solo-decimal" id="${modalId}-ph"
                                             maxlength="4"
                                             onkeypress="return validarDecimal(event, this)" autocomplete="off"
                                             data-modal-value="ph">
-                                        <div class="cocedor-form-error" id="${modalId}-ph-error" data-modal-error="ph"></div>
+                                        <div class="custom-form-error" id="${modalId}-ph-error" data-modal-error="ph"></div>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Turbidez (NTU)</label>
-                                        <input type="text" class="cocedor-form-control solo-decimal" id="${modalId}-ntu"
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Turbidez (NTU)</label>
+                                        <input type="text" class="custom-form-control solo-decimal" id="${modalId}-ntu"
                                             maxlength="4"
-                                            onkeypress="return validarNTU(event, this)" autocomplete="off"
+                                            onkeypress="return validarNumerosGral(event, this)" autocomplete="off"
                                             data-modal-value="ntu">
-                                        <div class="cocedor-form-error" id="${modalId}-ntu-error" data-modal-error="ntu"></div>
+                                        <div class="custom-form-error" id="${modalId}-ntu-error" data-modal-error="ntu"></div>
                                     </div>
                                 </div>
                             </div>
@@ -128,48 +128,48 @@
                     </div>
 
                     <!-- Card de Estado -->
-                    <div class="cocedor-card">
-                        <div class="cocedor-card-header">
-                            <div class="cocedor-card-header-icon">
+                    <div class="custom-modal-card">
+                        <div class="custom-modal-card-header">
+                            <div class="custom-modal-card-header-icon">
                                 <i data-lucide="flame"></i>
                             </div>
                             <span>Estado del Equipo</span>
                         </div>
-                        <div class="cocedor-card-body">
+                        <div class="custom-modal-card-body">
                             <div class="row">
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Muestra tomada</label>
-                                        <div class="cocedor-radio-group">
-                                            <div class="cocedor-radio-option">
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Muestra tomada</label>
+                                        <div class="custom-radio-group">
+                                            <div class="custom-radio-option">
                                                 <input type="radio" id="${modalId}-muestra-si" name="${modalId}-muestra"
                                                     value="Si" checked data-modal-radio="muestra">
-                                                <label class="cocedor-radio-label"
+                                                <label class="custom-radio-label"
                                                     for="${modalId}-muestra-si">Sí</label>
                                             </div>
-                                            <div class="cocedor-radio-option">
+                                            <div class="custom-radio-option">
                                                 <input type="radio" id="${modalId}-muestra-no" name="${modalId}-muestra"
                                                     value="No" data-modal-radio="muestra">
-                                                <label class="cocedor-radio-label"
+                                                <label class="custom-radio-label"
                                                     for="${modalId}-muestra-no">No</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Agitación</label>
-                                        <div class="cocedor-toggle-group">
-                                            <div class="cocedor-toggle-option">
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Agitación</label>
+                                        <div class="custom-toggle-group">
+                                            <div class="custom-toggle-option">
                                                 <input type="radio" id="${modalId}-agitacion-on"
                                                     name="${modalId}-agitacion" value="Si" checked data-modal-radio="agitacion">
-                                                <label class="cocedor-toggle-label"
+                                                <label class="custom-toggle-label"
                                                     for="${modalId}-agitacion-on">SI</label>
                                             </div>
-                                            <div class="cocedor-toggle-option">
+                                            <div class="custom-toggle-option">
                                                 <input type="radio" id="${modalId}-agitacion-off"
                                                     name="${modalId}-agitacion" value="No" data-modal-radio="agitacion">
-                                                <label class="cocedor-toggle-label"
+                                                <label class="custom-toggle-label"
                                                     for="${modalId}-agitacion-off">NO</label>
                                             </div>
                                         </div>
@@ -179,19 +179,19 @@
 
                             <div class="row">
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Desengrasador</label>
-                                        <div class="cocedor-toggle-group">
-                                            <div class="cocedor-toggle-option">
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Desengrasador</label>
+                                        <div class="custom-toggle-group">
+                                            <div class="custom-toggle-option">
                                                 <input type="radio" id="${modalId}-desengrasador-on"
                                                     name="${modalId}-desengrasador" value="Si" checked data-modal-radio="desengrasador">
-                                                <label class="cocedor-toggle-label"
+                                                <label class="custom-toggle-label"
                                                     for="${modalId}-desengrasador-on">SI</label>
                                             </div>
-                                            <div class="cocedor-toggle-option">
+                                            <div class="custom-toggle-option">
                                                 <input type="radio" id="${modalId}-desengrasador-off"
                                                     name="${modalId}-desengrasador" value="No" data-modal-radio="desengrasador">
-                                                <label class="cocedor-toggle-label"
+                                                <label class="custom-toggle-label"
                                                     for="${modalId}-desengrasador-off">NO</label>
                                             </div>
                                         </div>
@@ -199,19 +199,19 @@
                                 </div>
 
                                 <div class="col">
-                                    <div class="cocedor-form-group">
-                                        <label class="cocedor-form-label">Modo operación</label>
-                                        <div class="cocedor-radio-group">
-                                            <div class="cocedor-radio-option">
+                                    <div class="custom-form-group">
+                                        <label class="custom-form-label">Modo operación</label>
+                                        <div class="custom-radio-group">
+                                            <div class="custom-radio-option">
                                                 <input type="radio" id="${modalId}-modo-auto" name="${modalId}-modo"
                                                     value="operacion" checked data-modal-radio="modo">
-                                                <label class="cocedor-radio-label"
+                                                <label class="custom-radio-label"
                                                     for="${modalId}-modo-auto">Operación</label>
                                             </div>
-                                            <div class="cocedor-radio-option">
+                                            <div class="custom-radio-option">
                                                 <input type="radio" id="${modalId}-modo-manual" name="${modalId}-modo"
                                                     value="reinicio" data-modal-radio="modo">
-                                                <label class="cocedor-radio-label"
+                                                <label class="custom-radio-label"
                                                     for="${modalId}-modo-manual">Reinicio</label>
                                             </div>
                                         </div>
@@ -223,26 +223,26 @@
                     </div>
 
                     <!-- Card de Observaciones -->
-                    <div class="cocedor-card">
-                        <div class="cocedor-card-header">
-                            <div class="cocedor-card-header-icon">
+                    <div class="custom-modal-card">
+                        <div class="custom-modal-card-header">
+                            <div class="custom-modal-card-header-icon">
                                 <i data-lucide="binoculars"></i>
                             </div>
                             <span>Observaciones y Notas</span>
                         </div>
-                        <div class="cocedor-card-body">
-                            <div class="cocedor-form-group">
-                                <textarea class="cocedor-form-control" rows="3" id="${modalId}-observaciones"
+                        <div class="custom-modal-card-body">
+                            <div class="custom-form-group">
+                                <textarea class="custom-form-control" rows="3" id="${modalId}-observaciones"
                                     placeholder="Registre cualquier observación relevante..." data-modal-value="observaciones"></textarea>
                             </div>
                         </div>
                     </div>
 
                     <!-- Action Bar -->
-                    <div class="cocedor-action-bar">
-                        <button type="button" class="cocedor-btn cocedor-btn-outline"
+                    <div class="custom-modal-action-bar">
+                        <button type="button" class="custom-modal-btn custom-modal-btn-outline"
                             data-bs-dismiss="modal" id="${modalId}-cancel" data-modal-cancel>Cancelar</button>
-                        <button type="button" class="cocedor-btn cocedor-btn-primary" id="${modalId}-confirm" data-modal-confirm>Guardar
+                        <button type="button" class="custom-modal-btn custom-modal-btn-primary" id="${modalId}-confirm" data-modal-confirm>Guardar
                             Registro</button>
                     </div>
                 </div>

@@ -3,76 +3,9 @@
 import { showToast } from "../toast.js";
 import { isAdminOrGerente, tienePermiso } from "../../utils/session.js";
 import { ACTIONS } from "../../pages/cocedores/cocedores.actions.js";
-import { procesarMateriales, renderMateriales } from "../../pages/cocedores/modals/iniciarProceso.modal.js";
-
-/**
- * Agrupa y suma las cantidades de materiales con el mismo nombre.
- * @param {Array<Object>} materiales - Lista de materiales sin procesar.
- * @returns {Array<Object>} Un array con los materiales agrupados.
- */
-const reduceMateriles = (materiales) => {
-    return Object.values(materiales.reduce((acc, item) => {
-        const nombre = item.nombre.trim();
-        const cantidadNum = parseFloat(item.cantidad);
-
-        if (!acc[nombre]) {
-            acc[nombre] = { nombre, cantidad: 0 };
-        }
-        acc[nombre].cantidad += cantidadNum;
-        return acc;
-    }, {}));
-};
-
-/**
- * Renderiza el HTML de una insignia de estado.
- * @param {string} estatus - El estado del cocedor.
- * @returns {string} El HTML del badge.
- */
-const renderBadgeEstatus = (estatus) => {
-    const statusConfig = {
-        'ACTIVO': { class: 'status-active', icon: 'zap', tooltip: 'Operativo' },
-        'MANTENIMIENTO': { class: 'status-maintenance', icon: 'wrench', tooltip: 'En mantenimiento' },
-        'INACTIVO': { class: 'status-inactive', icon: 'power-off', tooltip: 'Apagado' },
-        'PENDIENTE': { class: 'status-pending', icon: 'clock', tooltip: 'Esperando acción' }
-    };
-    const config = statusConfig[estatus] || statusConfig.PENDIENTE;
-
-    return `
-        <span class="status-badge ${config.class}" 
-              title="${config.tooltip}" 
-              aria-label="${config.tooltip}">
-            <i data-lucide="${config.icon}"></i>
-            ${estatus}
-        </span>
-    `;
-};
-
-/**
- * Genera el HTML para un botón de acción.
- * @param {string} className - Clase CSS del botón.
- * @param {string} title - Título del botón.
- * @param {string} iconName - Nombre del ícono de Lucide.
- * @param {string} btnText - Texto del botón.
- * @param {string} [dataId] - ID para el atributo data-id.
- * @param {boolean} [disabled=false] - Indica si el botón debe estar deshabilitado.
- * @returns {string} El HTML del botón.
- */
-const renderButton = (className, title, iconName, btnText, dataId, disabled = false) => {
-    const disabledAttr = disabled ? 'disabled' : '';
-    const dataAttr = dataId ? `data-id="${dataId}"` : '';
-    const classAttr = className.startsWith('btn-registrar-disabled') ? className : `${className} pulse-hover`;
-    
-    return `
-        <button class="btn btn-action ${classAttr}"
-                title="${title}"
-                aria-label="${title}"
-                ${dataAttr}
-                ${disabledAttr}>
-            <i data-lucide="${iconName}"></i>
-            <span class="btn-text">${btnText}</span>
-        </button>
-    `;
-};
+import { reduceMateriales ,renderMateriales, procesarMateriales } from "../../utils/renderMateriales.js";
+import { renderBadgeEstatus } from "../../utils/statusBadges.js";
+import { renderButton } from "../../utils/renderButtons.js";
 
 
 /**
@@ -154,7 +87,7 @@ export const renderTableCocedores = (cocedores, tablaBody) => {
 
     const rowsHtml = cocedores.map((c, i) => {
         const materiales = procesarMateriales(c.materiales);
-        const materialesAgrupado = reduceMateriles(materiales);
+        const materialesAgrupado = reduceMateriales(materiales);
         const isValidated = Number(c.supervisor_validado) === 1 || c.supervisor_validado === null;
 
         return `

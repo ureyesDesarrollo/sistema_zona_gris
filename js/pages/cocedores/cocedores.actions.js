@@ -13,89 +13,10 @@ import { showMaintenanceModal } from "./modals/maintenance.modal.js";
 import { showConfirm } from "../../components/modals/modal.confirm.js";
 import { showCocedorCaptureModal } from "./modals/cocedor.modal.js";
 import { showCocedorValidateModal } from "./modals/validate.modal.js";
-
-/**
- * Procesa la respuesta de la API y lanza un error con un mensaje descriptivo si falla.
- * Esto evita la duplicación de código en cada función de acción.
- * @param {object} res La respuesta de la API.
- * @param {string} defaultMsg Mensaje de error por defecto.
- */
-export const handleServiceResponse = (res, defaultMsg = "Ocurrió un error") => {
-    const isArray = Array.isArray(res);
-    const isObject = typeof res === 'object' && res !== null && !isArray;
-
-    // Casos válidos: array, o objeto con ok/success/data positivo
-    const isSuccess =
-        isArray ||
-        (isObject && (
-            res.ok === true ||
-            res.success === true ||
-            (res.data !== undefined && res.data !== null)
-        ));
-
-    if (isSuccess) return;
-
-    console.error("❌ Error en respuesta del servicio:", res);
-
-    let errorMsg = defaultMsg;
-
-    if (isObject) {
-        // Errores tipo objeto
-        if (res.errors) {
-            if (typeof res.errors === 'object') {
-                errorMsg = Object.entries(res.errors)
-                    .map(([field, msgs]) => `• ${field}: ${Array.isArray(msgs) ? msgs.join(", ") : msgs}`)
-                    .join("<br>");
-            } else if (typeof res.errors === 'string') {
-                errorMsg = res.errors;
-            }
-        }
-
-        // Error simple
-        else if (res.error) {
-            errorMsg = res.error;
-        }
-
-        // Mensaje genérico
-        else if (res.message) {
-            errorMsg = res.message;
-        }
-    }
-
-    throw new Error(errorMsg);
-};
+import { handleServiceResponse } from "../../utils/api.js";
+import runAction from "../../utils/runActions.js";
 
 
-/**
- * Ejecuta una acción de forma segura, previniendo múltiples clics.
- * Se encarga de la deshabilitación del botón y el manejo de errores global.
- * @param {HTMLElement} btn El botón que activa la acción.
- * @param {function} reloadFn La función para recargar la UI.
- * @param {function} actionFn La función asíncrona que realiza la lógica de la acción.
- */
-const runAction = async (btn, reloadFn, actionFn) => {
-    // Previene múltiples clics mientras la acción está en curso.
-    if (btn.hasAttribute("data-in-flight")) return;
-
-    btn.setAttribute("data-in-flight", "1");
-    btn.disabled = true;
-
-    try {
-        await actionFn();
-        // Recarga la UI solo si la acción fue exitosa.
-        if (typeof reloadFn === "function") {
-            await reloadFn();
-        }
-    } catch (error) {
-        console.error("Error en la acción:", error);
-        // Muestra un toast de error con el mensaje capturado.
-        showToast(error.message || "Ocurrió un error inesperado.", "error");
-    } finally {
-        // Restaura el estado del botón.
-        btn.disabled = false;
-        btn.removeAttribute("data-in-flight");
-    }
-};
 
 export const ACTIONS = {
     // Pone un cocedor en estado de mantenimiento.

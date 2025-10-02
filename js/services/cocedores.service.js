@@ -1,11 +1,11 @@
-import { FUNCIONES_COCEDORES, CATALOGOS_COCEDORES, BASE_API, REPORTES } from "../config.js";
+import { FUNCIONES, CATALOGOS, BASE_API, REPORTES } from "../config.js";
 import { fetchApi } from "../utils/api.js"
 import { getLocalDateTimeString } from "../utils/getLocalDateTimeString.js";
 
 export async function fetchCocedores() {
   
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/estado`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/estado`);
     if (!res.success) throw new Error(res.error);
     return res.data;
   } catch (err) {
@@ -16,7 +16,7 @@ export async function fetchCocedores() {
 
 export async function fetchProximaRevision() {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/proxima-revision`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/proxima-revision`);
     if (!res.success) throw new Error(res.error);
     const { proxima_revision } = res.data;
     return proxima_revision;
@@ -28,7 +28,7 @@ export async function fetchProximaRevision() {
 
 export const changeStatus = async (id, estatus) => {
   try {
-    const res = await fetchApi(`${CATALOGOS_COCEDORES}/${id}/estatus`, 'PUT', JSON.stringify({ estatus }));
+    const res = await fetchApi(`${CATALOGOS}/cocedor/${id}/estatus`, 'PUT', JSON.stringify({ estatus }));
     return res;
   } catch (e) {
     console.error(`Error en changeStatus del cocedor ${id} a ${estatus}`, e);
@@ -38,7 +38,7 @@ export const changeStatus = async (id, estatus) => {
 
 export const registrarParo = async (payload) => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/paro`, 'POST', JSON.stringify(payload));
+    const res = await fetchApi(`${FUNCIONES}/cocedores/paro`, 'POST', JSON.stringify(payload));
     return res;
   } catch (e) {
     console.error(`Error en registrarParo del cocedor ${payload.id}`, e);
@@ -48,7 +48,7 @@ export const registrarParo = async (payload) => {
 
 export const finalizarParo = async (payload) => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/finalizar-paro`, 'POST', JSON.stringify(payload));
+    const res = await fetchApi(`${FUNCIONES}/cocedores/finalizar-paro`, 'POST', JSON.stringify(payload));
     return res;
   } catch (e) {
     console.error(`Error en finalizarParo del cocedor ${payload.id}`, e);
@@ -59,7 +59,7 @@ export const finalizarParo = async (payload) => {
 
 export const fetchProcesos = async () => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/procesos-disponibles`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/procesos-disponibles`);
     return res;
   } catch (err) {
     console.error('[fetchProcesos]', err);
@@ -69,7 +69,7 @@ export const fetchProcesos = async () => {
 
 export async function iniciarProcesos(payload) {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/combinar-procesos`, 'POST', JSON.stringify(payload));
+    const res = await fetchApi(`${FUNCIONES}/cocedores/combinar-procesos`, 'POST', JSON.stringify(payload));
     return res;
   } catch (e) {
     console.error(`Error al iniciar procesos`, e);
@@ -79,7 +79,7 @@ export async function iniciarProcesos(payload) {
 
 export const obtenerCocedoresProcesoById = async (id) => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/obtener-cocedores-proceso-by-id/${id}`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/obtener-cocedores-proceso-by-id/${id}`);
     return res;
   } catch (err) {
     console.error('[obtenerCocedoresProceso]', err);
@@ -89,7 +89,7 @@ export const obtenerCocedoresProcesoById = async (id) => {
 
 export const obtenerFlujos = async () => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/obtener-flujo`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/obtener-flujo`);
     if (!res.success) throw new Error(res.error);
     return res.data;
   } catch (err) {
@@ -100,7 +100,7 @@ export const obtenerFlujos = async () => {
 
 export const obtenerTemperaturaCocedores = async () => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/obtener-temperatura`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/obtener-temperatura`);
     if (!res.success) throw new Error(res.error);
     return res.data[0];
   } catch (err) {
@@ -113,7 +113,7 @@ export const validarConsecutividadHoraXHora = async (id) => {
   try {
     const now = new Date();
   const fechaHora = getLocalDateTimeString(now);
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/validar-consecutividad/${id}/${fechaHora}`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/validar-consecutividad/${id}/${fechaHora}`);
     if (!res.success) throw new Error(res.error);
     return res.data;
   } catch (err) {
@@ -124,7 +124,7 @@ export const validarConsecutividadHoraXHora = async (id) => {
 
 export const registrarHoraXHora = async (payload) => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/registro-horario`, 'POST', JSON.stringify(payload));
+    const res = await fetchApi(`${FUNCIONES}/cocedores/registro-horario`, 'POST', JSON.stringify(payload));
     return res;
   } catch (e) {
     console.error(`Error al registrar hora x hora`, e);
@@ -134,7 +134,7 @@ export const registrarHoraXHora = async (payload) => {
 
 export const obtenerDetelleCocedorProceso = async (id) => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/obtener-detalle-cocedor-proceso/${id}`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/obtener-detalle-cocedor-proceso/${id}`);
     if (!res.success) throw new Error(res.error);
     return res.data[0];
   } catch (err) {
@@ -145,7 +145,7 @@ export const obtenerDetelleCocedorProceso = async (id) => {
 
 export const validarHoraXHora = async (payload) => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/validar-supervisor`, 'POST', JSON.stringify(payload));
+    const res = await fetchApi(`${FUNCIONES}/cocedores/validar-supervisor`, 'POST', JSON.stringify(payload));
     return res;
   } catch (e) {
     console.error(`Error al validar hora x hora`, e);
@@ -156,17 +156,17 @@ export const validarHoraXHora = async (payload) => {
 
 export const finalizarMezcla = async (payload) => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/finalizar-mezcla`, 'POST', JSON.stringify(payload));
+    const res = await fetchApi(`${FUNCIONES}/cocedores/finalizar-mezcla`, 'POST', JSON.stringify(payload));
     return res;
   }catch(e){
     console.error(`Error al finalizar proceso en cocedores`, e);
-    return { error: "Error al finalizar proceso en cocedores"};s
+    return { error: "Error al finalizar proceso en cocedores"};
   }
 }
 
 export const obtenerMezclaEnProceso = async() =>  { 
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/obtener-mezcla-en-proceso`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/obtener-mezcla-en-proceso`);
     return res;
   } catch (err) {
     console.error('[obtenerMezclaEnProceso]', err);
@@ -176,7 +176,7 @@ export const obtenerMezclaEnProceso = async() =>  {
 
 export const obtenerMezclaById = async (id) => {
   try {
-    const res = await fetchApi(`${FUNCIONES_COCEDORES}/obtener-mezcla-by-id/${id}`);
+    const res = await fetchApi(`${FUNCIONES}/cocedores/obtener-mezcla-by-id/${id}`);
     return res;
   } catch (err) {
     console.error('[obtenerMezclaById]', err);

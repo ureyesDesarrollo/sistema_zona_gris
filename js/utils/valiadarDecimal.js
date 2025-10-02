@@ -24,11 +24,10 @@ function validarDecimal(e, input) {
   return false;
 }
 
-function validarNTU(e, input) {
+function validarNumerosGral(e, input) {
   //solo permitir números
   if (/[0-9]/.test(e.key)) return true;
 
-  //Valor maximo 1000
   if (input.value.length >= 4) return false;
 
   

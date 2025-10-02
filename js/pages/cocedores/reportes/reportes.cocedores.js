@@ -134,7 +134,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const fecha_fin = document.getElementById('fecha_fin').value;
         try {
             const data = await getData(fecha_inicio, fecha_fin);
-            console.log(data);
             populateTable(data);
         } catch (error) {
             console.error('Error cargando datos:', error, error.message);

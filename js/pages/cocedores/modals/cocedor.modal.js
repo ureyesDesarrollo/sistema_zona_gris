@@ -47,20 +47,20 @@ const validateFormData = (modalEl, cocedorId) => {
     const camposValidar = validarCampos(cocedorId);
 
     if (Number(modalEl.querySelector(`[data-modal-value="ntu"]`).value) > 1000) {
-        modalEl.querySelector(`[data-modal-value="ntu"]`).classList.add('cocedor-form-control-invalid');
+        modalEl.querySelector(`[data-modal-value="ntu"]`).classList.add('custom-form-control-invalid');
         showToast("NTU debe ser menor o igual a 1000.", "warning");
     }
 
     camposValidar.forEach(campo => {
         const input = modalEl.querySelector(`[data-modal-value="${campo.id}"]`);
         if (!input.value) {
-            input.classList.add('cocedor-form-control-invalid');
+            input.classList.add('custom-form-control-invalid');
             isValid = false;
             return;
         }
         const inputError = modalEl.querySelector(`[data-modal-error="${campo.id}"]`);
         const isCampoValido = validarInputNumerico(input, inputError, campo.rango);
-        input.classList.toggle('cocedor-form-control-invalid', !isCampoValido);
+        input.classList.toggle('custom-form-control-invalid', !isCampoValido);
 
         if (!isCampoValido) {
             isValid = false;
@@ -73,14 +73,7 @@ const validateFormData = (modalEl, cocedorId) => {
         }
     });
 
-    const muestrasInvalidas = ["muestra", "agitacion", "desengrasador"]
-        .map(name => getModalRadioValue(modalEl, name))
-        .filter(val => val === "no" || val === "off");
-
-    if (muestrasInvalidas.length > 0) {
-        showToast("Verifica muestra, agitación y desengrasador.", "warning");
-        isValid = false;
-    }
+    
 
     if (camposInvalidados.length > 0) {
         hechosAlerta.push({
@@ -93,6 +86,15 @@ const validateFormData = (modalEl, cocedorId) => {
             fecha: new Date().toLocaleString('sv-SE'),
             facts: hechosAlerta,
         };
+    }
+
+    const muestrasInvalidas = ["muestra", "agitacion", "desengrasador"]
+        .map(name => getModalRadioValue(modalEl, name))
+        .filter(val => val === "no" || val === "off");
+
+    if (muestrasInvalidas.length > 0) {
+        showToast("Verifica muestra, agitación y desengrasador.", "warning");
+        isValid = false;
     }
 
     return { isValid, payloadAlerta };
@@ -148,9 +150,9 @@ const preloadModalValues = (modalEl, datos, flujos, temperatura, cocedorId) => {
     const isValidTempEntrada = COCEDORES_TEMPERATURA_DE_ENTRADA > tempEntrada.min && COCEDORES_TEMPERATURA_DE_ENTRADA < tempEntrada.max;
     const isValidTempSalida = COCEDORES_TEMPERATURA_DE_SALIDA > tempSalida.min && COCEDORES_TEMPERATURA_DE_SALIDA < tempSalida.max;
     const isValidFlujo = flujo > flujoRango.min && flujo < flujoRango.max;
-    modalEl.querySelector(`[data-modal-value='temp-entrada']`)?.classList.toggle('cocedor-form-control-invalid', !isValidTempEntrada);
-    modalEl.querySelector(`[data-modal-value='temp-salida']`)?.classList.toggle('cocedor-form-control-invalid', !isValidTempSalida);
-    modalEl.querySelector(`[data-modal-value='flujo']`)?.classList.toggle('cocedor-form-control-invalid', !isValidFlujo);
+    modalEl.querySelector(`[data-modal-value='temp-entrada']`)?.classList.toggle('c-form-control-invalid', !isValidTempEntrada);
+    modalEl.querySelector(`[data-modal-value='temp-salida']`)?.classList.toggle('custom-form-control-invalid', !isValidTempSalida);
+    modalEl.querySelector(`[data-modal-value='flujo']`)?.classList.toggle('custom-form-control-invalid', !isValidFlujo);
 };
 
 
@@ -168,7 +170,7 @@ export async function showCocedorCaptureModal(config = {}) {
     } = config;
 
     if (!cocedorId) {
-        showToast("No se proporcionó el cocedor.", false);
+        showToast("No se proporcionó el cocedor.", "error");
         return null;
     }
 
@@ -186,7 +188,7 @@ export async function showCocedorCaptureModal(config = {}) {
         }
 
         // 2. Prepara el HTML y reemplaza
-        const modalId = `cocedor-modal-${cocedorId}`;
+        const modalId = `custom-modal-${cocedorId}`;
         let rawHtml = await fetchHtml('views/cocedores/registrarHoraXHoraModal.html');
         rawHtml = rawHtml
             .replace(/\$\{modalId\}/g, modalId)

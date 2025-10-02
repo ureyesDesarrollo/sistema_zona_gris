@@ -1,0 +1,252 @@
+.custom-modal-content {
+    --custom-primary: #2563eb;
+    --custom-primary-light: #e0e7ff;
+    --custom-success: #10b981;
+    --custom-success-light: #d1fae5;
+    --custom-light-gray: #f8fafc;
+    --custom-medium-gray: #e2e8f0;
+    --custom-dark-gray: #64748b;
+    --custom-dark: #1e293b;
+    --custom-danger: #dc2626;
+    --custom-danger-light: #fee2e2;
+    --custom-danger-dark: #b91c1c;
+    --custom-radius: 10px;
+    --custom-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    color: #334155;
+  }
+  
+  .custom-modal-content .custom-modal-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .custom-modal-content .custom-modal-card {
+    background: white;
+    border-radius: var(--custom-radius);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--custom-medium-gray);
+  }
+  
+  .custom-modal-content .custom-modal-card-header {
+    padding: 1rem 1.25rem;
+    background-color: var(--custom-light-gray);
+    border-bottom: 1px solid var(--custom-medium-gray);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .custom-modal-content .custom-modal-card-header-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--custom-primary);
+  }
+  
+  .custom-modal-content .custom-modal-card-body {
+    padding: 1.25rem;
+  }
+  
+  .custom-modal-content .custom-modal-card-section {
+    padding: 1rem;
+    border-bottom: 1px solid var(--custom-medium-gray);
+  }
+  
+  .custom-modal-content .custom-modal-card-section:last-child {
+    border-bottom: none;
+  }
+  
+  .custom-modal-content .custom-radio-group {
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  .custom-modal-content .custom-radio-option {
+    position: relative;
+    flex: 1;
+  }
+  
+  .custom-modal-content .custom-radio-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .custom-modal-content .custom-radio-label {
+    display: block;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border: 1px solid var(--custom-medium-gray);
+    border-radius: var(--custom-radius);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+  
+  .custom-modal-content
+    .custom-radio-option
+    input:checked
+    + .custom-radio-label {
+    background-color: var(--custom-primary);
+    color: white;
+    border-color: var(--custom-primary);
+  }
+  
+  .custom-modal-content .custom-toggle-group {
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  .custom-modal-content .custom-toggle-option {
+    position: relative;
+    flex: 1;
+  }
+  
+  .custom-modal-content .custom-toggle-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .custom-modal-content .custom-toggle-label {
+    display: block;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border: 1px solid var(--custom-medium-gray);
+    border-radius: var(--custom-radius);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+  
+  .custom-modal-content
+    .custom-toggle-option
+    input:checked
+    + .custom-toggle-label[for*="on"],
+  .custom-modal-content
+    .custom-toggle-option
+    input:checked
+    + .custom-toggle-label[for*="si"] {
+    background-color: var(--custom-success);
+    color: white;
+    border-color: var(--custom-success);
+  }
+  
+  .custom-modal-content
+    .custom-toggle-option
+    input:checked
+    + .custom-toggle-label[for*="off"],
+  .custom-modal-content
+    .custom-toggle-option
+    input:checked
+    + .custom-toggle-label[for*="no"] {
+    background-color: #f1f5f9;
+    color: var(--custom-dark-gray);
+    border-color: var(--custom-medium-gray);
+  }
+  
+  .custom-modal-content .custom-form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .custom-modal-content .custom-form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  
+  .custom-modal-content .custom-form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--custom-medium-gray);
+    border-radius: var(--custom-radius);
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .custom-modal-content .custom-form-control:focus {
+    border-color: var(--custom-primary);
+    border: 2px solid var(--custom-primary);
+    outline: none;
+  }
+  
+  .custom-modal-content .custom-modal-action-bar {
+    bottom: 1.5rem;
+    background: white;
+    border-radius: var(--custom-radius);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    border: 1px solid var(--custom-medium-gray);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .custom-modal-content .custom-modal-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--custom-radius);
+    cursor: pointer;
+    font-weight: 500;
+    border: 1px solid transparent;
+  }
+  
+  .custom-modal-content .custom-modal-btn-outline {
+    background-color: white;
+    border-color: var(--custom-medium-gray);
+  }
+  
+  .custom-modal-content .custom-modal-btn-primary {
+    background-color: var(--custom-primary);
+    color: white;
+  }
+  
+  .custom-modal-content .custom-form-control-invalid {
+    border: 2px solid var(--custom-danger);
+    background-color: var(--custom-danger-light);
+    color: var(--custom-danger-dark);
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  /* Estilo para foco en campos inválidos */
+  .custom-modal-content .custom-form-control-invalid:focus {
+    border-color: var(--custom-danger-dark);
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2);
+    outline: none;
+  }
+  
+  .custom-modal-content .custom-form-control-alerta {
+    border: 2px solid #ffc107 !important;
+    background-color: #fff3cd;
+  }
+  
+  .custom-form-error {
+    color: var(--custom-danger);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: none;
+  }
+  
+  .validation-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+  }
