@@ -1,7 +1,8 @@
 import { showToast } from "../../components/toast.js";
-import { fetchEstadoClarificadores, fetchProcesosActivos, iniciarProceso } from "../../services/clarificador.service.js";
+import { fetchEstadoClarificadores, fetchProcesosActivos, iniciarProceso, registrarParametros } from "../../services/clarificador.service.js";
+import { alerta } from "../../services/alertas.service.js";
 import { handleServiceResponse } from "../../utils/api.js";
-import { getUser } from "../../utils/auth.js";
+import runAction from "../../utils/runActions.js";
 import { showClarificadorModal } from "./modals/clarificador.modal.js";
 import { showProcessModal } from "./modals/iniciarProceso.modal.js";
 
@@ -35,14 +36,22 @@ const endProcess = async (user) => {
 };
 
 export const ACTIONS = {
-   async registrar({ id, btn, reloadFn }) {
-    const data = await showClarificadorModal({
-        clarificadorId: id,
-        title: "Registrar datos",
-    });
-    if (!data) {
-        showToast("Registro cancelado.", "warning");
-        return;
+    async registrar({ id, btn, reloadFn }) {
+            const data = await showClarificadorModal({
+                clarificadorId: id,
+                title: "Registrar datos",
+            });
+            if (!data) {
+                showToast("Registro cancelado.", "warning");
+                return;
+            }
+        await runAction(btn, reloadFn, async () => {
+            const res = await registrarParametros(data);
+            if(data.payloadAlerta != {}){
+                alerta(data.payloadAlerta);
+            }
+            handleServiceResponse(res, "No se pudo guardar el registro.");
+            showToast("Registro guardado correctamente.", "success");
+        });
     }
-   }
 }

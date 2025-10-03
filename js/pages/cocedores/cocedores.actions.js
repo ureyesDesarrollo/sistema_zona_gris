@@ -5,8 +5,8 @@ import {
     validarConsecutividadHoraXHora, // Renombrado para corregir el error tipográfico
     registrarHoraXHora,
     validarHoraXHora,
-    alerta,
 } from "../../services/cocedores.service.js";
+import { alerta } from "../../services/alertas.service.js";
 import { getUserId } from "../../utils/session.js";
 import { showToast } from "../../components/toast.js";
 import { showMaintenanceModal } from "./modals/maintenance.modal.js";

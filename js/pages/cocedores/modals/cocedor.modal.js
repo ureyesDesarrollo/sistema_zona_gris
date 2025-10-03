@@ -1,7 +1,7 @@
 // js/modals/cocedor.modal.js
 import { createModal } from "../../../components/modals/modal.factory.js";
 import { showToast } from "../../../components/toast.js";
-import { alerta, obtenerCocedoresProcesoById, obtenerFlujos, obtenerTemperaturaCocedores } from "../../../services/cocedores.service.js";
+import { obtenerCocedoresProcesoById, obtenerFlujos, obtenerTemperaturaCocedores } from "../../../services/cocedores.service.js";
 import { getLocalDateTimeString } from "../../../utils/getLocalDateTimeString.js";
 import { validarInputNumerico } from "../../../utils/isNumber.js";
 import { RANGOS_VALIDACION, validarCampos } from "./rangosParametros.js";
@@ -41,6 +41,7 @@ const getFormData = (modalEl, cocedorId, payloadAlerta) => {
  */
 const validateFormData = (modalEl, cocedorId) => {
     let isValid = true;
+    let hasEmptyField = false;
     const camposInvalidados = [];
     const hechosAlerta = [{ titulo: "Cocedor:", valor: cocedorId }];
     let payloadAlerta = {};
@@ -56,6 +57,7 @@ const validateFormData = (modalEl, cocedorId) => {
         if (!input.value) {
             input.classList.add('custom-form-control-invalid');
             isValid = false;
+            hasEmptyField = true;
             return;
         }
         const inputError = modalEl.querySelector(`[data-modal-error="${campo.id}"]`);
@@ -97,7 +99,7 @@ const validateFormData = (modalEl, cocedorId) => {
         isValid = false;
     }
 
-    return { isValid, payloadAlerta };
+    return { isValid, payloadAlerta, hasEmptyField };
 };
 
 
@@ -199,8 +201,11 @@ export async function showCocedorCaptureModal(config = {}) {
         // 3. Usa createModal con onReady para inyectar los valores y listeners
         const onConfirm = (e, modalEl) => {
             e.preventDefault();
-            const { isValid, payloadAlerta } = validateFormData(modalEl, cocedorId);
-            if (!isValid) return;
+            const { isValid, payloadAlerta, hasEmptyField } = validateFormData(modalEl, cocedorId);
+            if(hasEmptyField){
+                showToast("No se permiten campos vacíos.", "warning");
+                return;
+            }
             return getFormData(modalEl, cocedorId, payloadAlerta);
         };
 

@@ -184,20 +184,6 @@ export const obtenerMezclaById = async (id) => {
   }
 }
 
-export const alerta = async (payload) => {
-  try {
-    const res = await fetch(`${BASE_API}/alertas/enviar`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
-    });
-    return res;
-  }catch(e){
-    console.error(`Error al enviar alerta`, e);
-    return { error: "Error al enviar alerta"};
-  }
-}
-
 export const obtenerReporte = async (payload) => {
   try {
     const res = await fetchApi(`${REPORTES}/cocedores`, 'POST', JSON.stringify(payload));

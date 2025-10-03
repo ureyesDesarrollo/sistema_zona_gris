@@ -7,7 +7,7 @@ import { getUser } from "../../../utils/auth.js";
 import { getModalValue, getModalRadioValue } from "../../../utils/modalUtils.js";
 import { validarCampos } from "./rangosParametros.js";
 import { validarInputNumerico } from "../../../utils/isNumber.js";
-import { createFactParams, createFactReponsable, createPayloadAlerta } from "../../../utils/crearAlerta.js";
+import { createEquipo, createFactParams, createFactResponsable, createPayloadAlerta } from "../../../utils/crearAlerta.js";
 
 const preloadModalValues = (modalEl, datos) => {
     const user = getUser();
@@ -24,38 +24,53 @@ const preloadModalValues = (modalEl, datos) => {
 }
 
 const getFormData = (modalEl, clarificadorId, payloadAlerta) => {
+    const user = getUser();
     return {
-        clarificador_id: clarificadorId,
         relacion_id: getModalValue(modalEl, "relacion-id"),
-        fecha: getModalValue(modalEl, "fecha"),
-        solidos_entrada: getModalValue(modalEl, "solidos-entrada"),
-        ntu_entrada: getModalValue(modalEl, "ntu-entrada"),
-        ntu_salida: getModalValue(modalEl, "ntu-salida"),
-        ph_entrada: getModalValue(modalEl, "ph-entrada"),
-        ph_electrodo: getModalValue(modalEl, "ph-electrodo"),
-        ph_control_procesos: getModalValue(modalEl, "ph-control-proceso"),
-        presion: getModalValue(modalEl, "presion"),
-        entrada_aire: getModalValue(modalEl, "entrada-aire"),
-        varometro: getModalValue(modalEl, "varometro"),
-        nivel_nata: getModalValue(modalEl, "nivel-nata"),
-        filtros: getModalValue(modalEl, "filtros"),
+        usuario_id: user?.user_id ?? null,
+        responsable_tipo: user?.usuario === "laboratorio" ? "CONTROL DE PROCESOS" : "OPERADOR",
+        param_solidos_entrada: getModalValue(modalEl, "solidos-entrada"),
+        param_flujo_salida: getModalValue(modalEl, "flujo-salida"),
+        param_ntu_entrada: getModalValue(modalEl, "ntu-entrada"),
+        param_ntu_salida: getModalValue(modalEl, "ntu-salida"),
+        param_ph_entrada: getModalValue(modalEl, "ph-entrada"),
+        param_ph_electrodo: getModalValue(modalEl, "ph-electrodo"),
+        param_ph_control: getModalValue(modalEl, "ph-control-procesos"),
+        param_dosificacion_polimero: getModalValue(modalEl, "dosificacion-polimero"),
+        tanque: getModalValue(modalEl, "tanque"),
+        tanque_hora_inicio: getModalValue(modalEl, "tanque-hora-inicio"),
+        tanque_hora_fin: getModalValue(modalEl, "tanque-hora-fin"),
+        param_presion: getModalValue(modalEl, "presion"),
+        param_entrada_aire: getModalValue(modalEl, "entrada-aire"),
+        param_varometro: getModalValue(modalEl, "varometro"),
+        param_nivel_nata: getModalValue(modalEl, "nivel-nata"),
+        param_filtro_1: getModalValue(modalEl, "filtro-1"),
+        param_filtro_2: getModalValue(modalEl, "filtro-2"),
+        param_filtro_3: getModalValue(modalEl, "filtro-3"),
+        param_filtro_4: getModalValue(modalEl, "filtro-4"),
+        param_filtro_5: getModalValue(modalEl, "filtro-5"),
         cambio_filtro: getModalRadioValue(modalEl, "cambio-filtro"),
+        payloadAlerta
     };
 };
 
 
 const validateFormData = (modalEl) => {
     let isValid = true;
+    let hasEmptyField = false;
     const camposInvalidados = [];
     const camposValidar = validarCampos();
-    const factsAlerta = [];
+    const factsAlerta = [createEquipo("Clarificador")];
     let payloadAlerta = {};
 
     camposValidar.forEach(campo => {
+
         const input = modalEl.querySelector(`[data-modal-value="${campo.id}"]`);
         if (!input.value) {
+            if (!campo.requerido) return;
             input.classList.add('custom-form-control-invalid');
             isValid = false;
+            hasEmptyField = true;
             return;
         }
 
@@ -63,19 +78,19 @@ const validateFormData = (modalEl) => {
         const isCampoValido = validarInputNumerico(input, inputError, campo.rango);
         input.classList.toggle('custom-form-control-invalid', !isCampoValido);
 
-        if(!isCampoValido){
+        if (!isCampoValido) {
             isValid = false;
-            camposInvalidados.push({campo, valor: input.value});
+            camposInvalidados.push({ campo, valor: input.value });
             factsAlerta.push(...createFactParams(campo, input));
         }
     });
 
-    if(camposInvalidados.length > 0){
-        factsAlerta.push(createFactReponsable(getModalValue(modalEl, "operador")));
+    if (camposInvalidados.length > 0) {
+        factsAlerta.push(createFactResponsable(getModalValue(modalEl, "operador")));
     }
 
     payloadAlerta = createPayloadAlerta(factsAlerta);
-    return { isValid, payloadAlerta };
+    return { isValid, payloadAlerta, hasEmptyField };
 
 }
 
@@ -132,9 +147,12 @@ export async function showClarificadorModal(config = {}) {
         // 3. Usa createModal con onReady para inyectar los valores y listeners
         const onConfirm = (e, modalEl) => {
             e.preventDefault();
-            const { isValid, payloadAlerta } = validateFormData(modalEl);
-            console.log(payloadAlerta);
-            if (!isValid) return;
+            const { isValid, payloadAlerta, hasEmptyField } = validateFormData(modalEl);
+            if (hasEmptyField) {
+                showToast("No se permiten campos vacíos.", "warning");
+                return;
+            }
+
             return getFormData(modalEl, clarificadorId, payloadAlerta);
         };
 

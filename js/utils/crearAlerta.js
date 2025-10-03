@@ -6,7 +6,7 @@ const createFactParams = (campo, input) => {
       ];
 }
 
-const createFactReponsable = (responsable) => {
+const createFactResponsable = (responsable) => {
     return {
         titulo: "👤 Responsable de registro:",
         valor: responsable
@@ -22,9 +22,17 @@ const createPayloadAlerta = (facts) => {
       };
 }
 
+const createEquipo = (equipo) => {
+    return {
+        titulo: "🟩 Equipo: ",
+        valor: equipo
+    };
+}
+
 
 export {
     createFactParams,
-    createFactReponsable,
-    createPayloadAlerta
+    createFactResponsable,
+    createPayloadAlerta,
+    createEquipo
 }

@@ -44,3 +44,14 @@ export const obtenerClarificadorProcesoById = async (clarificadorId) => {
         return { error: "Error al obtener clarificador", data: null };
     }
 }
+
+export const registrarParametros = async (payload) => {
+    try {
+        const res = await fetchApi(`${FUNCIONES}/clarificador/insertarRegistroHorario`, 'POST', JSON.stringify(payload));
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+    } catch (e) {
+        console.error(`Error al registrar parametros`, e);
+        return { error: "Error al registrar parametros", data: null };
+    }
+}

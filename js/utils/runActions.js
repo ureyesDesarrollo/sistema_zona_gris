@@ -1,3 +1,5 @@
+import { showToast } from "../components/toast.js";
+
 /**
 * Ejecuta una acción de forma segura, previniendo múltiples clics.
 * Se encarga de la deshabilitación del botón y el manejo de errores global.
