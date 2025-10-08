@@ -2,7 +2,7 @@ import { getUser } from "../../utils/auth.js";
 import { reduceMateriales, renderMateriales, procesarMateriales } from "../../utils/renderMateriales.js";
 import { renderBadgeEstatus } from "../../utils/statusBadges.js";
 import { renderButton } from "../../utils/renderButtons.js";
-import { isAdminOrGerente } from "../../utils/session.js";
+import { isAdminOrGerente, isSupervisor, tienePermiso } from "../../utils/session.js";
 import { ACTIONS } from "./clarificador.actions.js";
 export const renderTableClarificadores = (clarificadores, tableBody) => {
     const user = getUser();
@@ -22,11 +22,13 @@ export const renderTableClarificadores = (clarificadores, tableBody) => {
             <td class="cell-name">${c.nombre || '-'}</td>
             <td class="cell-name">${c.procesos || '-'}</td>
             <td class="cell-name">
-                <div class="d-flex flex-wrap gap-1">
-                    ${renderMateriales(materialesAgrupado, 5, false)}
-                </div>
+            <div class="d-flex flex-wrap gap-1">
+            ${renderMateriales(materialesAgrupado, 5, false)}
+            </div>
             </td>
+            <td class="cell-name">${c.param_solidos_entrada || '-'}</td>
             <td class="cell-status">${renderBadgeEstatus(c.estatus)}</td>
+
             ${renderAccionesClarificador(c, user, c.validado)}
         </tr>
         `;
@@ -43,17 +45,28 @@ export const renderTableClarificadores = (clarificadores, tableBody) => {
  */
 const renderAccionesClarificador = (c, user, validado) => {
     if (isAdminOrGerente(user)) return '';
-    /*  return tienePermiso('Cocedores', 'editar')
-         ? renderActionsSupervisor(c.cocedor_id, c.estatus)
-         : renderActionsControlProcesos(c.cocedor_id, c.estatus, validado);
-         */ 
-         return `<td class="actions-cell">
-                 <div class="btn-group btn-group-actions" role="group">
-                     ${renderButton('btn-validar', 'Validar', 'notebook-tabs', 'Validar', c.clarificador_id)}
-                     ${renderButton('btn-registrar', 'Registrar', 'test-tube', 'Registrar', c.clarificador_id)}
-                 </div>
-             </td>`;
+    return isSupervisor(user)
+    ? renderAccionesSupervisor(c, user, validado)
+    : renderAccionesControlProcesos(c, user, validado);
 };
+
+
+const renderAccionesControlProcesos = (c, user, validado) => {
+    return `<td class="actions-cell">
+                <div class="btn-group btn-group-actions" role="group">
+                    ${renderButton('btn-validar', 'Validar', 'notebook-tabs', 'Validar', c.clarificador_id)}
+                    ${renderButton('btn-registrar', 'Registrar', 'test-tube', 'Registrar', c.clarificador_id)}
+                </div>
+            </td>`;
+}
+
+const renderAccionesSupervisor = (c, user, validado) => {
+    return `<td class="actions-cell">
+                <div class="btn-group btn-group-actions" role="group">
+                    ${renderButton('btn-validar', 'Validar', 'notebook-tabs', 'Validar', c.clarificador_id)}
+                </div>
+            </td>`;
+}
 
 export const setupStatusChangeListeners = (tablaBody, reloadFn) => {
     if (!tablaBody || tablaBody.__listenersBound) return;

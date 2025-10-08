@@ -48,21 +48,21 @@ const validateFormData = (modalEl, cocedorId) => {
     const camposValidar = validarCampos(cocedorId);
 
     if (Number(modalEl.querySelector(`[data-modal-value="ntu"]`).value) > 1000) {
-        modalEl.querySelector(`[data-modal-value="ntu"]`).classList.add('custom-form-control-invalid');
+        modalEl.querySelector(`[data-modal-value="ntu"]`).classList.add('custom-modal-form-control-invalid');
         showToast("NTU debe ser menor o igual a 1000.", "warning");
     }
 
     camposValidar.forEach(campo => {
         const input = modalEl.querySelector(`[data-modal-value="${campo.id}"]`);
         if (!input.value) {
-            input.classList.add('custom-form-control-invalid');
+            input.classList.add('custom-modal-form-control-invalid');
             isValid = false;
             hasEmptyField = true;
             return;
         }
         const inputError = modalEl.querySelector(`[data-modal-error="${campo.id}"]`);
         const isCampoValido = validarInputNumerico(input, inputError, campo.rango);
-        input.classList.toggle('custom-form-control-invalid', !isCampoValido);
+        input.classList.toggle('custom-modal-form-control-invalid', !isCampoValido);
 
         if (!isCampoValido) {
             isValid = false;
@@ -153,8 +153,8 @@ const preloadModalValues = (modalEl, datos, flujos, temperatura, cocedorId) => {
     const isValidTempSalida = COCEDORES_TEMPERATURA_DE_SALIDA > tempSalida.min && COCEDORES_TEMPERATURA_DE_SALIDA < tempSalida.max;
     const isValidFlujo = flujo > flujoRango.min && flujo < flujoRango.max;
     modalEl.querySelector(`[data-modal-value='temp-entrada']`)?.classList.toggle('c-form-control-invalid', !isValidTempEntrada);
-    modalEl.querySelector(`[data-modal-value='temp-salida']`)?.classList.toggle('custom-form-control-invalid', !isValidTempSalida);
-    modalEl.querySelector(`[data-modal-value='flujo']`)?.classList.toggle('custom-form-control-invalid', !isValidFlujo);
+    modalEl.querySelector(`[data-modal-value='temp-salida']`)?.classList.toggle('custom-modal-form-control-invalid', !isValidTempSalida);
+    modalEl.querySelector(`[data-modal-value='flujo']`)?.classList.toggle('custom-modal-form-control-invalid', !isValidFlujo);
 };
 
 

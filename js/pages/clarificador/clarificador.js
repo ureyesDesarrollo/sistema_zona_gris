@@ -32,15 +32,6 @@ export async function init() {
         }, 5 * 60 * 1000);
 
     }
-
-    const btnValidar = document.querySelector('.btn-validar');
-    if (btnValidar) {
-        btnValidar.addEventListener('click', () => showProcessModal(procesos = []));
-    }
-
-    document.addEventListener('click .btn-validar', (e) => {
-        
-    });
 }
 
 export function destroy() {

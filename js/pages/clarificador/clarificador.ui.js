@@ -17,12 +17,22 @@ export async function updateUI(user) {
     const userIsControlProcesos = isControlProcesos(user);
     const clarificadores = await fetchEstadoClarificadores();
 
-    btnIniciarProcesoClarificador.classList.toggle('d-none', !userIsSupervisor);
-    btnFinalizarProcesoClarificador.classList.toggle('d-none', !userIsSupervisor);
-    accionesColumn.classList.toggle('d-none', !(userIsSupervisor || userIsControlProcesos));
+    if (btnIniciarProcesoClarificador) {
+        btnIniciarProcesoClarificador.classList.toggle('d-none', !userIsSupervisor);
+    }
 
-    renderTableClarificadores(clarificadores, tablaBody);
-    setupStatusChangeListeners(tablaBody, updateUI);
+    if (btnFinalizarProcesoClarificador) {
+        btnFinalizarProcesoClarificador.classList.toggle('d-none', !userIsSupervisor);
+    }
+
+    if (accionesColumn) {
+        accionesColumn.classList.toggle('d-none', !(userIsSupervisor || userIsControlProcesos));
+    }
+
+    if (tablaBody) {
+        renderTableClarificadores(clarificadores, tablaBody, {
+            showAcciones: userIsSupervisor || userIsControlProcesos
+        });
+        setupStatusChangeListeners(tablaBody, () => updateUI(user));
+    }
 }
-
-

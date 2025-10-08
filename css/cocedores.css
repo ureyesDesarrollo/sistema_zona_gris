@@ -233,22 +233,3 @@
   border: 1px solid #fca5a5;
 }
 
-.parameter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.parameter-item {
-  background: var(--cocedor-light-gray);
-  border-radius: 12px;
-  padding: 1.25rem;
-  border: 1px solid var(--cocedor-medium-gray);
-  transition: all 0.3s ease;
-}
-
-.parameter-item:hover {
-  background: white;
-  box-shadow: var(--shadow-sm);
-}
-

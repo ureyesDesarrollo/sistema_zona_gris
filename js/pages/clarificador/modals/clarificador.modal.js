@@ -10,6 +10,27 @@ import { validarInputNumerico } from "../../../utils/isNumber.js";
 import { createEquipo, createFactParams, createFactResponsable, createPayloadAlerta } from "../../../utils/crearAlerta.js";
 
 const preloadModalValues = (modalEl, datos) => {
+    const now = new Date();
+    const currentMinutes = now.getMinutes();
+
+    const dt1 = new Date(now);
+    const dt2 = new Date(now);
+
+    if (currentMinutes < 30) {
+        // Si son menos de 30 minutos, usar hora:00 y hora:30
+        dt1.setMinutes(0, 0, 0);
+        dt2.setMinutes(30, 0, 0);
+    } else {
+        // Si son 30 minutos o más, usar hora:30 y (hora+1):00
+        dt1.setMinutes(30, 0, 0);
+        dt2.setHours(dt2.getHours() + 1);
+        dt2.setMinutes(0, 0, 0);
+    }
+
+    const tanqueHoraInicioEl = modalEl.querySelector('[data-modal-value="tanque-hora-inicio"]');
+    tanqueHoraInicioEl.value = getLocalDateTimeString(dt1);
+    const tanqueHoraFinEl = modalEl.querySelector('[data-modal-value="tanque-hora-fin"]');
+    tanqueHoraFinEl.value = getLocalDateTimeString(dt2);
     const user = getUser();
     const operador = user?.usuario_nombre ?? user?.usuario ?? 'Anonimo';
     const clarificadorIdEl = modalEl.querySelector('[data-modal-value="clarificador"]');
@@ -25,6 +46,8 @@ const preloadModalValues = (modalEl, datos) => {
 
 const getFormData = (modalEl, clarificadorId, payloadAlerta) => {
     const user = getUser();
+    const val = getModalRadioValue(modalEl, "cambio-filtro");
+    const cambio_filtro = val === "Si" ? 1 : 0;
     return {
         relacion_id: getModalValue(modalEl, "relacion-id"),
         usuario_id: user?.user_id ?? null,
@@ -49,7 +72,7 @@ const getFormData = (modalEl, clarificadorId, payloadAlerta) => {
         param_filtro_3: getModalValue(modalEl, "filtro-3"),
         param_filtro_4: getModalValue(modalEl, "filtro-4"),
         param_filtro_5: getModalValue(modalEl, "filtro-5"),
-        cambio_filtro: getModalRadioValue(modalEl, "cambio-filtro"),
+        cambio_filtro,
         payloadAlerta
     };
 };
@@ -68,7 +91,7 @@ const validateFormData = (modalEl) => {
         const input = modalEl.querySelector(`[data-modal-value="${campo.id}"]`);
         if (!input.value) {
             if (!campo.requerido) return;
-            input.classList.add('custom-form-control-invalid');
+            input.classList.add('custom-modal-form-control-invalid');
             isValid = false;
             hasEmptyField = true;
             return;
@@ -76,7 +99,7 @@ const validateFormData = (modalEl) => {
 
         const inputError = modalEl.querySelector(`[data-modal-error="${campo.id}"]`);
         const isCampoValido = validarInputNumerico(input, inputError, campo.rango);
-        input.classList.toggle('custom-form-control-invalid', !isCampoValido);
+        input.classList.toggle('custom-modal-form-control-invalid', !isCampoValido);
 
         if (!isCampoValido) {
             isValid = false;
@@ -147,6 +170,8 @@ export async function showClarificadorModal(config = {}) {
         // 3. Usa createModal con onReady para inyectar los valores y listeners
         const onConfirm = (e, modalEl) => {
             e.preventDefault();
+            //console.log(getFormData(modalEl, clarificadorId, {}));
+
             const { isValid, payloadAlerta, hasEmptyField } = validateFormData(modalEl);
             if (hasEmptyField) {
                 showToast("No se permiten campos vacíos.", "warning");

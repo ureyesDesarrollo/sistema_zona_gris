@@ -40,7 +40,7 @@ export async function updateUI(user) {
         renderTableCocedores(cocedores, elements.tablaBody);
         setupStatusChangeListeners(
             elements.tablaBody,
-            updateUI // Pasamos la función completa para un refresco general de la UI.
+            () => updateUI(user) // Pasamos la función completa para un refresco general de la UI.
         );
     }
 }

@@ -5,6 +5,7 @@ import { handleServiceResponse } from "../../utils/api.js";
 import runAction from "../../utils/runActions.js";
 import { showClarificadorModal } from "./modals/clarificador.modal.js";
 import { showProcessModal } from "./modals/iniciarProceso.modal.js";
+import { showClarificadorValidateModal } from "./modals/validate.modal.js";
 
 export const handleAction = async (action, user) => {
     switch (action) {
@@ -53,5 +54,16 @@ export const ACTIONS = {
             handleServiceResponse(res, "No se pudo guardar el registro.");
             showToast("Registro guardado correctamente.", "success");
         });
+    },
+
+    async validar({ id, btn, reloadFn }) {
+        const data = await showClarificadorValidateModal({
+            clarificadorId: id,
+            title: "Validar datos",
+        });
+        if (!data) {
+            showToast("Validación cancelada.", "warning");
+            return;
+        }
     }
 }
