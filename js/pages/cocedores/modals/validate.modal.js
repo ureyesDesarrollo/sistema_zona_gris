@@ -52,12 +52,12 @@ const preloadModalValues = (modalEl, datos, cocedorId) => {
     const isValidSolidos = datos.param_solidos > solidos.min && datos.param_solidos < solidos.max;
     const isValidPh = datos.param_ph > ph.min && datos.param_ph < ph.max;
     const isValidNtu = datos.param_ntu > ntu.min && datos.param_ntu < ntu.max;
-    modalEl.querySelector(`[data-modal-value='temp-entrada']`)?.classList.toggle('cocedor-form-control-invalid', !isValidTempEntrada);
-    modalEl.querySelector(`[data-modal-value='temp-salida']`)?.classList.toggle('cocedor-form-control-invalid', !isValidTempSalida);
-    modalEl.querySelector(`[data-modal-value='flujo']`)?.classList.toggle('cocedor-form-control-invalid', !isValidFlujo);
-    modalEl.querySelector(`[data-modal-value='solidos']`)?.classList.toggle('cocedor-form-control-invalid', !isValidSolidos);
-    modalEl.querySelector(`[data-modal-value='ph']`)?.classList.toggle('cocedor-form-control-invalid', !isValidPh);
-    modalEl.querySelector(`[data-modal-value='ntu']`)?.classList.toggle('cocedor-form-control-invalid', !isValidNtu);
+    modalEl.querySelector(`[data-modal-value='temp-entrada']`)?.classList.toggle('custom-modal-form-control-invalid', !isValidTempEntrada);
+    modalEl.querySelector(`[data-modal-value='temp-salida']`)?.classList.toggle('custom-modal-form-control-invalid', !isValidTempSalida);
+    modalEl.querySelector(`[data-modal-value='flujo']`)?.classList.toggle('custom-modal-form-control-invalid', !isValidFlujo);
+    modalEl.querySelector(`[data-modal-value='solidos']`)?.classList.toggle('custom-modal-form-control-invalid', !isValidSolidos);
+    modalEl.querySelector(`[data-modal-value='ph']`)?.classList.toggle('custom-modal-form-control-invalid', !isValidPh);
+    modalEl.querySelector(`[data-modal-value='ntu']`)?.classList.toggle('custom-modal-form-control-invalid', !isValidNtu);
 
     if (datos.supervisor_validado === '1') {
         modalEl.querySelector('[data-modal-value="status-indicator-text"]').classList.replace('status-pending', 'status-validado');
@@ -109,7 +109,7 @@ export async function showCocedorValidateModal(config = {}) {
             const validation = validate(comentarios, { minLength: 20 });
 
             if (!validation.isValid) {
-                modalEl.querySelector('[data-modal-value="comentarios-validacion"]').classList.add('cocedor-form-control-invalid');
+                modalEl.querySelector('[data-modal-value="comentarios-validacion"]').classList.add('custom-modal-form-control-invalid');
 
                 const messages = {
                     'empty': "Debe ingresar comentarios de validación.",
@@ -136,15 +136,15 @@ export async function showCocedorValidateModal(config = {}) {
             if (comentarioInput) {
               // Validación inicial (por si ya venía con datos)
               const valor = comentarioInput.value?.trim() || "";
-              if (comentarioInput.classList.contains('cocedor-form-control-invalid') && valor.length >= 20) {
-                comentarioInput.classList.remove('cocedor-form-control-invalid');
+              if (comentarioInput.classList.contains('custom-modal-form-control-invalid') && valor.length >= 20) {
+                comentarioInput.classList.remove('custom-modal-form-control-invalid');
               }
           
               // Listener para validar en tiempo real mientras escribe
               comentarioInput.addEventListener('input', () => {
                 const val = comentarioInput.value.trim();
                 if (val.length >= 20) {
-                  comentarioInput.classList.remove('cocedor-form-control-invalid');
+                  comentarioInput.classList.remove('custom-modal-form-control-invalid');
                 }
               });
             }

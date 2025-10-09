@@ -6,6 +6,7 @@ import runAction from "../../utils/runActions.js";
 import { showClarificadorModal } from "./modals/clarificador.modal.js";
 import { showProcessModal } from "./modals/iniciarProceso.modal.js";
 import { showClarificadorValidateModal } from "./modals/validate.modal.js";
+import { updateUI } from "./clarificador.ui.js";
 
 export const handleAction = async (action, user) => {
     switch (action) {
@@ -29,6 +30,8 @@ const startProcess = async (user) => {
         const { proceso_agrupado_id, clarificador_id } = result;
         const res = await iniciarProceso({ proceso_agrupado_id, clarificador_id });
         handleServiceResponse(res, "No se pudo iniciar el proceso.");
+        updateUI(user);
+        showToast("Proceso iniciado correctamente.", "success");
     }
 };
 

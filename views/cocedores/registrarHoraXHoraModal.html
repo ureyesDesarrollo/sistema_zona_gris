@@ -20,8 +20,8 @@
                             <span>Información del Registro</span>
                         </div>
                         <div class="custom-modal-card-body">
-                            <div class="custom-form-group">
-                                <label class="custom-form-label">Cocedor seleccionado</label>
+                            <div class="custom-modal-form-group">
+                                <label class="custom-modal-form-label">Cocedor seleccionado</label>
                                 <input type="text" class="custom-modal-form-control" id="${modalId}-cocedor" readonly
                                 style="color: var(--custom-dark-gray); pointer-events: none;" data-modal-value="cocedor">
                                 <input type="text" class="custom-modal-form-control" id="${modalId}-relacion-id" readonly 
@@ -29,16 +29,16 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Fecha y hora</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Fecha y hora</label>
                                         <input type="datetime-local" class="custom-modal-form-control" id="${modalId}-fecha"
                                         readonly
                                         style="color: var(--custom-dark-gray); pointer-events: none;" data-modal-value="fecha">
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Operador</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Operador</label>
                                         <input type="text" class="custom-modal-form-control" id="${modalId}-operador"
                                             readonly style="color: var(--custom-dark-gray); pointer-events: none;"
                                             data-modal-value="operador">
@@ -59,68 +59,68 @@
                         <div class="custom-modal-card-body">
                             <div class="row">
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Flujo (LPM)</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Flujo (LPM)</label>
                                         <input type="number" class="custom-modal-form-control solo-decimal"
                                             id="${modalId}-flujo" step="0.1" readonly
                                             style="color: var(--custom-dark-gray); pointer-events: none;"
                                             data-modal-value="flujo">
-                                        <div class="custom-form-error" id="${modalId}-flujo-error" data-modal-error="flujo"></div>
+                                        <div class="custom-modal-form-error" id="${modalId}-flujo-error" data-modal-error="flujo"></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Temperatura Entrada (°C)</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Temperatura Entrada (°C)</label>
                                         <input type="number" class="custom-modal-form-control solo-decimal"
                                             id="${modalId}-temp-entrada" step="0.1" readonly
                                             style="color: var(--custom-dark-gray); pointer-events: none;"
                                             data-modal-value="temp-entrada">
-                                        <div class="custom-form-error" id="${modalId}-temp-entrada-error" data-modal-error="temp-entrada"></div>
+                                        <div class="custom-modal-form-error" id="${modalId}-temp-entrada-error" data-modal-error="temp-entrada"></div>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Temperatura Salida (°C)</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Temperatura Salida (°C)</label>
                                         <input type="number" class="custom-modal-form-control solo-decimal"
                                             id="${modalId}-temp-salida" step="0.1" readonly
                                             style="color: var(--custom-dark-gray); pointer-events: none;"
                                             data-modal-value="temp-salida">
-                                        <div class="custom-form-error" id="${modalId}-temp-salida-error" data-modal-error="temp-salida"></div>
+                                        <div class="custom-modal-form-error" id="${modalId}-temp-salida-error" data-modal-error="temp-salida"></div>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="row">
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">%Solidos</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">%Solidos</label>
                                         <input type="text" class="custom-modal-form-control solo-decimal"
                                             id="${modalId}-solidos" maxlength="3"
                                             onkeypress="return validarDecimal(event, this)" autocomplete="off"
                                             data-modal-value="solidos">
-                                        <div class="custom-form-error" id="${modalId}-solidos-error" data-modal-error="solidos"></div>
+                                        <div class="custom-modal-form-error" id="${modalId}-solidos-error" data-modal-error="solidos"></div>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Nivel de pH</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Nivel de pH</label>
                                         <input type="text" class="custom-modal-form-control solo-decimal" id="${modalId}-ph"
                                             maxlength="4"
                                             onkeypress="return validarDecimal(event, this)" autocomplete="off"
                                             data-modal-value="ph">
-                                        <div class="custom-form-error" id="${modalId}-ph-error" data-modal-error="ph"></div>
+                                        <div class="custom-modal-form-error" id="${modalId}-ph-error" data-modal-error="ph"></div>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Turbidez (NTU)</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Turbidez (NTU)</label>
                                         <input type="text" class="custom-modal-form-control solo-decimal" id="${modalId}-ntu"
                                             maxlength="4"
                                             onkeypress="return validarNumerosGral(event, this)" autocomplete="off"
                                             data-modal-value="ntu">
-                                        <div class="custom-form-error" id="${modalId}-ntu-error" data-modal-error="ntu"></div>
+                                        <div class="custom-modal-form-error" id="${modalId}-ntu-error" data-modal-error="ntu"></div>
                                     </div>
                                 </div>
                             </div>
@@ -138,8 +138,8 @@
                         <div class="custom-modal-card-body">
                             <div class="row">
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Muestra tomada</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Muestra tomada</label>
                                         <div class="custom-radio-group">
                                             <div class="custom-radio-option">
                                                 <input type="radio" id="${modalId}-muestra-si" name="${modalId}-muestra"
@@ -157,8 +157,8 @@
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Agitación</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Agitación</label>
                                         <div class="custom-toggle-group">
                                             <div class="custom-toggle-option">
                                                 <input type="radio" id="${modalId}-agitacion-on"
@@ -179,8 +179,8 @@
 
                             <div class="row">
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Desengrasador</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Desengrasador</label>
                                         <div class="custom-toggle-group">
                                             <div class="custom-toggle-option">
                                                 <input type="radio" id="${modalId}-desengrasador-on"
@@ -199,8 +199,8 @@
                                 </div>
 
                                 <div class="col">
-                                    <div class="custom-form-group">
-                                        <label class="custom-form-label">Modo operación</label>
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Modo operación</label>
                                         <div class="custom-radio-group">
                                             <div class="custom-radio-option">
                                                 <input type="radio" id="${modalId}-modo-auto" name="${modalId}-modo"
@@ -231,7 +231,7 @@
                             <span>Observaciones y Notas</span>
                         </div>
                         <div class="custom-modal-card-body">
-                            <div class="custom-form-group">
+                            <div class="custom-modal-form-group">
                                 <textarea class="custom-modal-form-control" rows="3" id="${modalId}-observaciones"
                                     placeholder="Registre cualquier observación relevante..." data-modal-value="observaciones"></textarea>
                             </div>

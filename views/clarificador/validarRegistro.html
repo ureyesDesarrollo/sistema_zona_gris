@@ -17,9 +17,201 @@
                             <span>Información del Registro</span>
                         </div>
                         <div class="custom-modal-card-body">
-                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Clarificador Seleccionado</label>
+                                        <input type="text" class="custom-modal-form-control" id="${modalId}-clarificador" 
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="clarifacdor">
+                                        <input type="text" class="custom-modal-form-control" id="${modalId}-relacion-id" readonly
+                                            style="color: var(--custom-modal-dark-gray); pointer-events: none;" hidden data-modal-value="relacion-id">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Fecha y hora</label>
+                                        <input type="datetime-local" class="custom-modal-form-control" id="${modalId}-fecha"
+                                            value="" readonly
+                                            style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="fecha">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="custom-modal-form-group">
+                                        <label class="custom-modal-form-label">Operador</label>
+                                        <input type="text" class="custom-modal-form-control" id="${modalId}-operador"
+                                            value="" readonly
+                                            style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="operador">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="validation-status status-pending" id="status-indicator">
+                                <span id="status-indicator-text" data-modal-value="status-indicator-text"></span>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Card de Parámetros -->
+                     <div class="custom-modal-card">
+                        <div class="custom-modal-card-header">
+                            <div class="custom-modal-card-header-icon">
+                                <i data-lucide="chart-line"></i>
+                            </div>
+                            <span>Parámetros Técnicos</span>
+                        </div>
+                        <div class="custom-modal-card-body">
+                            <div class="parameter-grid">
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Solidos de entrada</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-solidos-entrada" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="solidos-entrada">
+                                    <small id="${modalId}-solidos-entrada-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Flujo de salida (LPM)</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-flujo-salida" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="flujo-salida">
+                                    <small id="${modalId}-flujo-salida-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col">
+                                    <h5 class="fw-bold">NTU'S</h5>
+                                </div>
+                            </div>
+                            <div class="parameter-grid">
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">NTU Entrada</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-ntu-entrada" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="ntu-entrada">
+                                    <small id="${modalId}-ntu-entrada-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">NTU Salida</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-ntu-salida" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="ntu-salida">
+                                    <small id="${modalId}-ntu-salida-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                            </div>
+                            <div class="parameter-grid pt-3">
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">pH Entrada</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-ph-entrada" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="ph-entrada">
+                                    <small id="${modalId}-ph-entrada-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col">
+                                    <h5 class="fw-bold">pH'S</h5>
+                                </div>
+                            </div>
+                            <div class="parameter-grid">
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Electrodo</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-ph-electrodo" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="ph-electrodo">
+                                    <small id="${modalId}-ph-electrodo-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-ph-control-procesos" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="ph-control-procesos">
+                                    <small id="${modalId}-ph-control-procesos-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                            </div>
+                            <div class="parameter-grid pt-3">
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Dosificación de polimero</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-ph-control-procesos" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="ph-control-procesos">
+                                    <small id="${modalId}-ph-control-procesos-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col">
+                                    <h5 class="fw-bold">Recuperación de polimero</h5>
+                                </div>
+                            </div>
+                            <div class="parameter-grid">
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label"># Tanque</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-tanque" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="tanque">
+                                    <small id="${modalId}-tanque-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-tanque-hora-inicio" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="tanque-hora-inicio">
+                                    <small id="${modalId}-tanque-hora-inicio-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-tanque-hora-fin" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="tanque-hora-fin">
+                                    <small id="${modalId}-tanque-hora-fin-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col">
+                                    <h5 class="fw-bold">Bomba microburbuja</h5>
+                                </div>
+                            </div>
+                             <div class="parameter-grid">
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Presión</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-presion" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="presion">
+                                    <small id="${modalId}-presion-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-entrada-aire" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="entrada-aire">
+                                    <small id="${modalId}-entrada-aire-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-varometro" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="varometro">
+                                    <small id="${modalId}-varometro-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                            </div>
+                            <div class="parameter-grid pt-3">
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Nivel de nata en clarificador</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-nivel-nata" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="nivel-nata">
+                                    <small id="${modalId}-nivel-nata-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col">
+                                    <h5 class="fw-bold">Filtro canasta</h5>
+                                </div>
+                            </div>
+                             <div class="parameter-grid">
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Filtro 1</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-filtro-1" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="filtro-1">
+                                    <small id="${modalId}-filtro-1-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-entrada-aire" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="entrada-aire">
+                                    <small id="${modalId}-entrada-aire-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-varometro" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="varometro">
+                                    <small id="${modalId}-varometro-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
                 </div>                
             </div>
         </div>

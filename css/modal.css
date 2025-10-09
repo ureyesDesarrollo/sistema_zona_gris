@@ -156,11 +156,11 @@
     border-color: var(--custom-modal-medium-gray);
   }
   
-  .custom-modal-content .custom-form-group {
+  .custom-modal-content .custom-modal-form-group {
     margin-bottom: 1.25rem;
   }
   
-  .custom-modal-content .custom-form-label {
+  .custom-modal-content .custom-modal-form-label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
