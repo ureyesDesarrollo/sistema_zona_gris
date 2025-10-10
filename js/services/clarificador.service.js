@@ -55,3 +55,26 @@ export const registrarParametros = async (payload) => {
         return { error: "Error al registrar parametros", data: null };
     }
 }
+
+
+export const obtenerDetalleClarificadorProceso = async (id) => {
+    try{
+        const res = await fetchApi(`${FUNCIONES}/clarificador/obtenerDetalleClarificadorProceso/${id}`);
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+    }catch(e){
+        console.error(`Error al obtener detalle de clarificador`, e);
+        return { error: "Error al obtener detalle de clarificador", data: null };
+    }
+}
+
+export const validacionHora = async (payload) => {
+    try {
+        const res = await fetchApi(`${FUNCIONES}/clarificador/validacionHora`, 'POST', JSON.stringify(payload));
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+    } catch (e) {
+        console.error(`Error al validar hora`, e);
+        return { error: "Error al validar hora", data: null };
+    }
+}

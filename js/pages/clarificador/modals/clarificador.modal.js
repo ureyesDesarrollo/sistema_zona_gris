@@ -73,6 +73,7 @@ const getFormData = (modalEl, clarificadorId, payloadAlerta) => {
         param_filtro_4: getModalValue(modalEl, "filtro-4"),
         param_filtro_5: getModalValue(modalEl, "filtro-5"),
         cambio_filtro,
+        observaciones: getModalValue(modalEl, "observaciones") || 'N/A',
         payloadAlerta
     };
 };

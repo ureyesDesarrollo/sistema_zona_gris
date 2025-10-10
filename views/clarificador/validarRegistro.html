@@ -22,7 +22,7 @@
                                     <div class="custom-modal-form-group">
                                         <label class="custom-modal-form-label">Clarificador Seleccionado</label>
                                         <input type="text" class="custom-modal-form-control" id="${modalId}-clarificador" 
-                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="clarifacdor">
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="clarificador">
                                         <input type="text" class="custom-modal-form-control" id="${modalId}-relacion-id" readonly
                                             style="color: var(--custom-modal-dark-gray); pointer-events: none;" hidden data-modal-value="relacion-id">
                                     </div>
@@ -44,9 +44,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="validation-status status-pending" id="status-indicator">
-                                <span id="status-indicator-text" data-modal-value="status-indicator-text"></span>
-                            </div>
+                            <div class="validation-status status-pending" id="status-indicator-supervisor" role="status" aria-live="polite" data-modal-value="status-indicator-supervisor">
+                                <span class="status-label">Supervisor:</span>
+                                <span id="status-indicator-text-supervisor" class="status-text" data-modal-value="status-indicator-text-supervisor"></span>
+                              </div>
+                              
+                              <div class="validation-status status-pending" id="status-indicator-procesos" role="status" aria-live="polite" data-modal-value="status-indicator-procesos">
+                                <span class="status-label">Control de procesos:</span>
+                                <span id="status-indicator-text-procesos" class="status-text" data-modal-value="status-indicator-text-procesos"></span>
+                              </div>
                         </div>
                     </div>
 
@@ -122,9 +128,9 @@
                             <div class="parameter-grid pt-3">
                                 <div class="parameter-item">
                                     <label class="custom-modal-form-label">Dosificación de polimero</label>
-                                    <input type="text" class="custom-modal-form-control" id="${modalId}-ph-control-procesos" readonly
-                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="ph-control-procesos">
-                                    <small id="${modalId}-ph-control-procesos-error" class="text-danger mt-1 d-block"></small>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-dosificacion-polimero" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="dosificacion-polimero">
+                                    <small id="${modalId}-dosificacion-polimero-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                             </div>
                             <div class="row text-center mt-3">
@@ -140,13 +146,13 @@
                                     <small id="${modalId}-tanque-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
-                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <label class="custom-modal-form-label">Hora inicio</label>
                                     <input type="text" class="custom-modal-form-control" id="${modalId}-tanque-hora-inicio" readonly
                                         style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="tanque-hora-inicio">
                                     <small id="${modalId}-tanque-hora-inicio-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
-                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <label class="custom-modal-form-label">Hora fin</label>
                                     <input type="text" class="custom-modal-form-control" id="${modalId}-tanque-hora-fin" readonly
                                         style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="tanque-hora-fin">
                                     <small id="${modalId}-tanque-hora-fin-error" class="text-danger mt-1 d-block"></small>
@@ -165,13 +171,13 @@
                                     <small id="${modalId}-presion-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
-                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <label class="custom-modal-form-label">Entrada de aire</label>
                                     <input type="text" class="custom-modal-form-control" id="${modalId}-entrada-aire" readonly
                                         style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="entrada-aire">
                                     <small id="${modalId}-entrada-aire-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
-                                    <label class="custom-modal-form-label">Control proceso</label>
+                                    <label class="custom-modal-form-label">Varometro</label>
                                     <input type="text" class="custom-modal-form-control" id="${modalId}-varometro" readonly
                                         style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="varometro">
                                     <small id="${modalId}-varometro-error" class="text-danger mt-1 d-block"></small>
@@ -198,20 +204,91 @@
                                     <small id="${modalId}-filtro-1-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
-                                    <label class="custom-modal-form-label">Control proceso</label>
-                                    <input type="text" class="custom-modal-form-control" id="${modalId}-entrada-aire" readonly
-                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="entrada-aire">
-                                    <small id="${modalId}-entrada-aire-error" class="text-danger mt-1 d-block"></small>
+                                    <label class="custom-modal-form-label">Filtro 2</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-filtro-2" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="filtro-2">
+                                    <small id="${modalId}-filtro-2-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                                 <div class="parameter-item">
-                                    <label class="custom-modal-form-label">Control proceso</label>
-                                    <input type="text" class="custom-modal-form-control" id="${modalId}-varometro" readonly
-                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="varometro">
-                                    <small id="${modalId}-varometro-error" class="text-danger mt-1 d-block"></small>
+                                    <label class="custom-modal-form-label">Filtro 3</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-filtro-3" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="filtro-3">
+                                    <small id="${modalId}-filtro-3-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Filtro 4</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-filtro-4" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="filtro-4">
+                                    <small id="${modalId}-filtro-4-error" class="text-danger mt-1 d-block"></small>
+                                </div>
+                                <div class="parameter-item">
+                                    <label class="custom-modal-form-label">Filtro 5</label>
+                                    <input type="text" class="custom-modal-form-control" id="${modalId}-filtro-5" readonly
+                                        style="color: var(--custom-modal-dark-gray); pointer-events: none;" data-modal-value="filtro-5">
+                                    <small id="${modalId}-filtro-5-error" class="text-danger mt-1 d-block"></small>
                                 </div>
                             </div>
                         </div>
                      </div>
+                      <!-- Card de Observaciones -->
+                    <div class="custom-modal-card">
+                        <div class="custom-modal-card-header">
+                            <div class="custom-modal-card-header-icon">
+                                <i data-lucide="binoculars"></i>
+                            </div>
+                            <span>Observaciones y Notas</span>
+                        </div>
+                        <div class="custom-modal-card-body">
+                            <div class="custom-modal-form-group">
+                                <textarea class="custom-modal-form-control" rows="3" id="${modalId}-observaciones"
+                                    placeholder="Registre cualquier observación relevante..."
+                                    style="color: var(--custom-modal-dark-gray); pointer-events: none;" readonly data-modal-value="observaciones"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="custom-modal-card">
+                        <div class="custom-modal-card-header">
+                            <div class="custom-modal-card-header-icon">
+                                <i data-lucide="binoculars"></i>
+                            </div>
+                            <span>Panel de Validación del Supervisor</span>
+                        </div>
+                        <div class="custom-modal-card-body">
+                            <div class="validation-controls">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="custom-modal-form-group">
+                                            <label class="custom-modal-form-label">
+                                                Validado por supervisor en turno
+                                            </label>
+                                            <input type="text" class="custom-modal-form-control" id="${modalId}-validado-por" readonly data-modal-value="supervisor-validado">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="custom-modal-form-group">
+                                    <label class="custom-modal-form-label">
+                                        Comentarios de validación *
+                                    </label>
+                                    <textarea class="custom-modal-form-control custom-modal-textarea" id="comentarios-validacion"
+                                        placeholder="Ingrese comentarios detallados sobre la validación..." data-modal-value="comentarios-validacion"></textarea>
+                                    <small class="text-muted">
+                                        Los comentarios son obligatorios y quedarán registrados en el historial del
+                                        sistema.
+                                    </small>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="custom-modal-action-bar">
+                        <button type="button" class="custom-modal-btn custom-modal-btn-outline"
+                            data-bs-dismiss="modal" data-modal-cancel>Cancelar</button>
+                        <button type="button" class="custom-modal-btn custom-modal-btn-primary btn-confirm" id="${modalId}-confirm" data-modal-confirm>Validar
+                            registro</button>
+                    </div>
                 </div>                
             </div>
         </div>

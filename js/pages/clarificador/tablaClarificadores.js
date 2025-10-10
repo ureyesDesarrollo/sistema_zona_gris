@@ -29,7 +29,7 @@ export const renderTableClarificadores = (clarificadores, tableBody) => {
             <td class="cell-name">${c.param_solidos_entrada || '-'}</td>
             <td class="cell-status">${renderBadgeEstatus(c.estatus)}</td>
 
-            ${renderAccionesClarificador(c, user, c.validado)}
+            ${renderAccionesClarificador(c, user, c.puede_validar_hora)}
         </tr>
         `;
     });
@@ -43,27 +43,27 @@ export const renderTableClarificadores = (clarificadores, tableBody) => {
  * @param {Object} user - Objeto del usuario.
  * @returns {string} El HTML de la celda de acciones o una cadena vacía.
  */
-const renderAccionesClarificador = (c, user, validado) => {
+const renderAccionesClarificador = (c, user, puede_validar_hora) => {
     if (isAdminOrGerente(user)) return '';
     return isSupervisor(user)
-    ? renderAccionesSupervisor(c, user, validado)
-    : renderAccionesControlProcesos(c, user, validado);
+    ? renderAccionesSupervisor(c, user, puede_validar_hora)
+    : renderAccionesControlProcesos(c, user, puede_validar_hora);
 };
 
 
-const renderAccionesControlProcesos = (c, user, validado) => {
+const renderAccionesControlProcesos = (c, user, puede_validar_hora) => {
     return `<td class="actions-cell">
                 <div class="btn-group btn-group-actions" role="group">
-                    ${renderButton('btn-validar', 'Validar', 'notebook-tabs', 'Validar', c.clarificador_id)}
+                    ${puede_validar_hora ? renderButton('btn-validar', 'Validar', 'notebook-tabs', 'Validar', c.clarificador_id) : ''}
                     ${renderButton('btn-registrar', 'Registrar', 'test-tube', 'Registrar', c.clarificador_id)}
                 </div>
             </td>`;
 }
 
-const renderAccionesSupervisor = (c, user, validado) => {
+const renderAccionesSupervisor = (c, user, puede_validar_hora) => {
     return `<td class="actions-cell">
                 <div class="btn-group btn-group-actions" role="group">
-                    ${renderButton('btn-validar', 'Validar', 'notebook-tabs', 'Validar', c.clarificador_id)}
+                    ${puede_validar_hora ? renderButton('btn-validar', 'Validar', 'notebook-tabs', 'Validar', c.clarificador_id) : ''}
                 </div>
             </td>`;
 }

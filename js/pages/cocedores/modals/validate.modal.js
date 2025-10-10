@@ -4,17 +4,7 @@ import { obtenerDetelleCocedorProceso } from "../../../services/cocedores.servic
 import { createModal } from "../../../components/modals/modal.factory.js";
 import { getUser } from "../../../utils/auth.js";
 import { validate } from "../../../utils/observationValidate.js";
-
-/**
- * Prepara el HTML del modal y lo inyecta en el DOM.
- * @param {string} templatePath La ruta del archivo HTML.
- * @returns {Promise<string>} El HTML del modal.
- */
-async function fetchHtml(templatePath) {
-    const res = await fetch(templatePath);
-    if (!res.ok) throw new Error("No se pudo cargar el HTML del modal");
-    return await res.text();
-}
+import { fetchHtml, setValor } from "../../../utils/modalUtils.js";
 
 /**
  * Llena el formulario del modal con los datos obtenidos de la API.
@@ -24,25 +14,21 @@ async function fetchHtml(templatePath) {
  */
 const preloadModalValues = (modalEl, datos, cocedorId) => {
     if (!modalEl || !datos || !cocedorId) return;
-    const setValor = (id, valor) => {
-        const el = modalEl.querySelector(`[data-modal-value="${id}"]`);
-        if (el) el.value = valor;
-    };
 
     const user = getUser();
 
-    setValor('fecha', datos.fecha_hora);
-    setValor('cocedor', `${datos.cocedor}, ${datos.agrupacion}`);
-    setValor('relacion-id', datos.detalle_id);
-    setValor('operador', datos.responsable);
-    setValor('flujo', datos.param_agua);
-    setValor('temp-entrada', datos.param_temp_entrada);
-    setValor('temp-salida', datos.param_temp_salida);
-    setValor('solidos', datos.param_solidos);
-    setValor('ph', datos.param_ph);
-    setValor('ntu', datos.param_ntu);
-    setValor('observaciones', datos.observaciones);
-    setValor('supervisor-validado', user.usuario_nombre);
+    setValor(modalEl, 'fecha', datos.fecha_hora);
+    setValor(modalEl, 'cocedor', `${datos.cocedor}, ${datos.agrupacion}`);
+    setValor(modalEl, 'relacion-id', datos.detalle_id);
+    setValor(modalEl, 'operador', datos.responsable);
+    setValor(modalEl, 'flujo', datos.param_agua);
+    setValor(modalEl, 'temp-entrada', datos.param_temp_entrada);
+    setValor(modalEl, 'temp-salida', datos.param_temp_salida);
+    setValor(modalEl, 'solidos', datos.param_solidos);
+    setValor(modalEl, 'ph', datos.param_ph);
+    setValor(modalEl, 'ntu', datos.param_ntu);
+    setValor(modalEl, 'observaciones', datos.observaciones);
+    setValor(modalEl, 'supervisor-validado', user.usuario_nombre);
 
     const { tempEntrada, tempSalida, flujo: rangosFlujo, solidos, ph, ntu } = RANGOS_VALIDACION
     const flujoRango = rangosFlujo?.[cocedorId] ?? { min: 0, max: 0 };

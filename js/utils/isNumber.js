@@ -1,45 +1,93 @@
 export function validarInputNumerico(inputEl, inputError, { min, max, nombre }) {
   if (!inputEl) return false;
 
-  const value = parseFloat(inputEl.value);
-
-  // Limpieza previa de clases
-  inputEl.classList.remove(
-    "custom-modal-form-control-valid",
-    "custom-modal-form-control-invalid",
-    "custom-modal-form-control-alerta"
-  );
-
-  // Si no es número válido
-  if (isNaN(value)) {
+  // Validación básica de min/max
+  if (typeof min !== "number" || typeof max !== "number" || min > max) {
+    // Marcamos inválido si la config es incorrecta
+    inputEl.classList.remove(
+      "custom-modal-form-control-valid",
+      "custom-modal-form-control-alerta"
+    );
     inputEl.classList.add("custom-modal-form-control-invalid");
-    inputError.style.display = "block";
-    inputError.textContent = `Debe ingresar un valor válido para ${nombre}.`;
+    if (inputError) {
+      inputError.style.display = "block";
+      inputError.textContent = "Configuración inválida de min/max.";
+    }
+    return false;
+  }
+
+  const showError = (msg) => {
+    inputEl.classList.remove(
+      "custom-modal-form-control-valid",
+      "custom-modal-form-control-alerta"
+    );
+    inputEl.classList.add("custom-modal-form-control-invalid");
+    if (inputError) {
+      inputError.style.display = "block";
+      inputError.textContent = msg;
+    }
+  };
+
+  const showWarning = (msg) => {
+    inputEl.classList.remove(
+      "custom-modal-form-control-valid",
+      "custom-modal-form-control-invalid"
+    );
+    inputEl.classList.add("custom-modal-form-control-alerta");
+    if (inputError) {
+      inputError.style.display = "block";
+      inputError.textContent = msg;
+    }
+  };
+
+  const showValid = () => {
+    inputEl.classList.remove(
+      "custom-modal-form-control-invalid",
+      "custom-modal-form-control-alerta"
+    );
+    inputEl.classList.add("custom-modal-form-control-valid");
+    if (inputError) inputError.style.display = "none";
+  };
+
+  const raw = (inputEl.value ?? "").toString().replace(",", ".").trim();
+  const value = parseFloat(raw);
+
+  // No número
+  if (raw === "" || Number.isNaN(value)) {
+    showError(
+      nombre
+        ? `Debe ingresar un valor válido para ${nombre}.`
+        : "Debe ingresar un valor numérico válido."
+    );
     return false;
   }
 
   // Fuera de rango
   if (value < min || value > max) {
-    inputEl.classList.add("custom-modal-form-control-invalid");
-    inputError.style.display = "block";
-    inputError.textContent = `${nombre} debe estar entre ${min} y ${max}.`;
+    showError(
+      nombre
+        ? `${nombre} debe estar entre ${min} y ${max}.`
+        : `El valor debe estar entre ${min} y ${max}.`
+    );
     return false;
   }
 
-  // En rango válido, pero dentro del margen de alerta
-  const margen = (max - min) * 0.1;
-  const cercaDelMin = value >= min && value <= min + margen;
-  const cercaDelMax = value <= max && value >= max - margen;
+  // En rango, pero cerca de los límites (10% por defecto)
+  const rango = max - min;
+  const margen = rango > 0 ? rango * 0.1 : 0;
+  const cercaDelMin = value <= min + margen;
+  const cercaDelMax = value >= max - margen;
 
-  if (cercaDelMin || cercaDelMax) {
-    inputEl.classList.add("custom-modal-form-control-alerta");
-    inputError.style.display = "block";
-    inputError.textContent = `${nombre} está cerca del límite permitido (${min} - ${max}). Por favor, verifique.`;
+  if (margen > 0 && (cercaDelMin || cercaDelMax)) {
+    showWarning(
+      nombre
+        ? `${nombre} está cerca del límite permitido (${min} - ${max}). Por favor, verifique.`
+        : `El valor está cerca del límite permitido (${min} - ${max}).`
+    );
     return true;
   }
 
-  // Valor correcto, sin alertas
-  inputEl.classList.add("custom-modal-form-control-valid");
-  inputError.style.display = "none";
+  // Correcto
+  showValid();
   return true;
 }

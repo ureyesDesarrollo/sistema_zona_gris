@@ -1,5 +1,5 @@
 import { showToast } from "../../components/toast.js";
-import { fetchEstadoClarificadores, fetchProcesosActivos, iniciarProceso, registrarParametros } from "../../services/clarificador.service.js";
+import { fetchEstadoClarificadores, fetchProcesosActivos, iniciarProceso, registrarParametros, validacionHora } from "../../services/clarificador.service.js";
 import { alerta } from "../../services/alertas.service.js";
 import { handleServiceResponse } from "../../utils/api.js";
 import runAction from "../../utils/runActions.js";
@@ -68,5 +68,12 @@ export const ACTIONS = {
             showToast("Validación cancelada.", "warning");
             return;
         }
+
+        
+        await runAction(btn, reloadFn, async () => {
+            const res = await validacionHora(data);
+            handleServiceResponse(res, "No se pudo validar el registro.");
+            showToast("Registro validado correctamente.", "success");
+        });
     }
 }

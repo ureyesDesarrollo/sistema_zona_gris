@@ -215,21 +215,5 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-.status-pending {
-  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
-  color: var(--warning-orange-dark);
-  border: 1px solid #fed7aa;
-}
 
-.status-approved {
-  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-  color: var(--success-green-dark);
-  border: 1px solid #bbf7d0;
-}
-
-.status-rejected {
-  background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-  color: var(--danger-red-dark);
-  border: 1px solid #fca5a5;
-}
 
