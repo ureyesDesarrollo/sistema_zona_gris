@@ -44,14 +44,16 @@ export const renderTableClarificadores = (clarificadores, tableBody) => {
  * @returns {string} El HTML de la celda de acciones o una cadena vacía.
  */
 const renderAccionesClarificador = (c, user, puede_validar_hora) => {
+    const puedeValidarHora = puede_validar_hora === '1' ? true : false;
     if (isAdminOrGerente(user)) return '';
     return isSupervisor(user)
-    ? renderAccionesSupervisor(c, user, puede_validar_hora)
-    : renderAccionesControlProcesos(c, user, puede_validar_hora);
+    ? renderAccionesSupervisor(c, user, puedeValidarHora)
+    : renderAccionesControlProcesos(c, user, puedeValidarHora);
 };
 
 
 const renderAccionesControlProcesos = (c, user, puede_validar_hora) => {
+    console.log(puede_validar_hora);
     return `<td class="actions-cell">
                 <div class="btn-group btn-group-actions" role="group">
                     ${puede_validar_hora ? renderButton('btn-validar', 'Validar', 'notebook-tabs', 'Validar', c.clarificador_id) : ''}
