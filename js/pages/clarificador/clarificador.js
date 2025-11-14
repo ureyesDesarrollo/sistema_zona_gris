@@ -11,7 +11,8 @@ export async function init() {
     const userIsAdminOrGerente = isAdminOrGerente(user);
     const btnIniciarProceso = document.getElementById('btn-iniciar-proceso-clarificador');
     const btnFinalizarProceso = document.getElementById('btn-finalizar-proceso-clarificador');
-
+    const btnPreparacionPolimero = document.getElementById('btn-preparacion-polimero');
+    const btnRegistroPolimero = document.getElementById('btn-registro-polimero');
     await updateUI(user);
 
     if (btnIniciarProceso) {
@@ -20,6 +21,15 @@ export async function init() {
 
     if (btnFinalizarProceso) {
         btnFinalizarProceso.addEventListener('click', () => handleAction('endProcess', user));
+    }
+
+    if (btnPreparacionPolimero) {
+        btnPreparacionPolimero.addEventListener('click', () => handleAction('preparacionPolimero', user));
+    }
+
+
+    if (btnRegistroPolimero) {
+        btnRegistroPolimero.addEventListener('click', () => handleAction('registroPolimero', user));
     }
 
     if (userIsAdminOrGerente) {

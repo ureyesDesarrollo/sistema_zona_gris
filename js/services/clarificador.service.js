@@ -78,3 +78,49 @@ export const validacionHora = async (payload) => {
         return { error: "Error al validar hora", data: null };
     }
 }
+
+
+export const obtenerLoteQuimico = async (lote) => {
+    try {
+        const res = await fetchApi(`${FUNCIONES}/clarificador/obtenerLoteQuimico/${lote}`);
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+    } catch (e) {
+        console.error(`Error al consultar lote quimico`, e);
+        return { error: e.message, data: null };
+    }
+}
+
+export const insertarQuimico = async (lote, nombre_quimico) => {
+    try {
+        const res = await fetchApi(`${FUNCIONES}/clarificador/insertarQuimico`, 'POST', JSON.stringify({ lote, nombre_quimico }));
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+    } catch (e) {
+        console.error(`Error al insertar quimico`, e);
+        return { error: "Error al insertar quimico", data: null };
+    }
+}
+
+export const consultarQuimicos = async () => {
+    try {
+        const res = await fetchApi(`${FUNCIONES}/clarificador/consularQuimicos`,);
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+    } catch (e) {
+        console.error(`Error al consultar quimico`, e);
+        return { error: e.message, data: null };
+    }
+}
+
+
+export const insertarQuimicoClarificador = async (payload) => {
+    try {
+        const res = await fetchApi(`${FUNCIONES}/clarificador/insertarQuimicosClarificador`, 'POST', JSON.stringify(payload));
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+    } catch (e) {
+        console.error(`Error al insertar quimico clarificador`, e);
+        return { error: "Error al insertar quimico clarificador", data: null };
+    }
+}

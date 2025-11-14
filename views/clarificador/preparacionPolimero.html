@@ -1,0 +1,47 @@
+<div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}-label" aria-hidden="true">
+    <div class="modal-dialog modal-${size} modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title d-flex align-items-center gap-2" id="${modalId}-label">
+                    <i data-lucide="flask-conical"></i>${title}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-0 custom-modal-content">
+                <div class="custom-modal-container">
+                    <div class="custom-modal-card mt-4">
+                        <div class="custom-modal-card-header">
+                            <div class="custom-modal-card-header-icon">
+                                <i data-lucide="search"></i>
+                            </div>
+                            <span>Buscar Lote de Polímero</span>
+                        </div>
+                        <div class="custom-modal-card-body">
+                            <div class="custom-modal-form-group">
+                                <label class="custom-modal-form-label">Número de Lote</label>
+                                <input type="text" 
+                                           class="custom-modal-form-control" 
+                                           id="${modalId}-preparacion-polimero" 
+                                           data-modal-value="lote"
+                                           aria-describedby="${modalId}-lote-help"
+                                           autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="custom-modal-actions p-3 border-top">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-modal-cancel>
+                                <i data-lucide="x" class="me-1"></i>Cancelar
+                            </button>
+                            <button type="button" class="btn btn-primary" id="${modalId}-btn-buscar" data-modal-confirm>
+                                <i data-lucide="search" class="me-1"></i>Buscar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
