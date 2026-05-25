@@ -171,7 +171,6 @@ export async function showClarificadorModal(config = {}) {
         // 3. Usa createModal con onReady para inyectar los valores y listeners
         const onConfirm = (e, modalEl) => {
             e.preventDefault();
-            //console.log(getFormData(modalEl, clarificadorId, {}));
 
             const { isValid, payloadAlerta, hasEmptyField } = validateFormData(modalEl);
             if (hasEmptyField) {

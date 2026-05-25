@@ -61,6 +61,32 @@
                                         data-modal-value="observaciones"></textarea>
                                 </div>
                             </div>
+
+                            <div class="mt-3 d-none" id="${modalId}-clave-div">
+                                <div class="custom-modal-form-group">
+                                    <label class="custom-modal-form-label">Clave de control de procesos</label>
+                                    <input type="text" class="custom-modal-form-control" onkeypress="return validarNumerosGral(event, this)"
+                                        id="${modalId}-clave" autocomplete="off" maxlength="6"
+                                        data-modal-value="clave">
+                                </div>
+                            </div>
+
+                            <div class="mt-3 d-none" id="${modalId}-control-div">
+                                <div class="custom-modal-form-group">
+                                    <label class="custom-modal-form-label">Control de procesos</label>
+                                    <input type="text" class="custom-modal-form-control"
+                                        id="${modalId}-control" autocomplete="off" readonly
+                                        data-modal-value="control">
+                                </div>
+                            </div>
+
+                            <div class="mt-3 d-none">
+                                <div class="custom-modal-form-group">
+                                    <input type="text" class="custom-modal-form-control"
+                                        id="${modalId}-id-control" autocomplete="off" readonly
+                                        data-modal-value="id-control">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -74,7 +100,6 @@
                             Guardar
                         </button>
                     </div>
-
                 </div>
             </div>
 

@@ -9,7 +9,6 @@ import { validarCampos } from "./rangosParametros.js";
 
 const preloadModalValues = (modalEl, datos, clarificadorId) => {
   if (!modalEl || !datos || !clarificadorId) return;
-  console.log(datos);
   const user = getUser();
 
   setValor(modalEl, "fecha", datos.fecha_hora);

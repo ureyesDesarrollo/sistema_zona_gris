@@ -1,11 +1,12 @@
 import { createModal } from "../../../components/modals/modal.factory.js";
 import { fetchHtml } from "../../../utils/modalUtils.js";
 import { showToast } from "../../../components/toast.js";
-import { consultarQuimicos, fetchEstadoClarificadores } from "../../../services/clarificador.service.js";
+import { cambiarEstatusQuimico, consultarQuimicos, fetchEstadoClarificadores, obtenerUltimoLote, validUserCode } from "../../../services/clarificador.service.js";
+import { getUserId } from "../../../utils/session.js";
+import { debounce } from "../../../utils/debounce.js";
 
 const generarLotes = async (modalId) => {
     const lotes = await consultarQuimicos();
-    console.log(lotes);
 
     const container = document.getElementById(`${modalId}-lotes`);
     container.innerHTML = ""; // Limpia contenido previo
@@ -48,7 +49,6 @@ const generarLotes = async (modalId) => {
 
 const generarClarificadores = async (modalId) => {
     const clarificadores = await fetchEstadoClarificadores();
-    console.log(clarificadores);
 
     const container = document.getElementById(`${modalId}-clarificadores`);
     container.innerHTML = "";
@@ -104,6 +104,91 @@ const generarClarificadores = async (modalId) => {
     }
 };
 
+
+const setupUniqueSelections = (modalId) => {
+    const modalEl = document.getElementById(modalId);
+
+    if (!modalEl) return;
+
+    const resetControlFields = () => {
+        const claveDiv = modalEl.querySelector(`#${modalId}-clave-div`);
+        const controlDiv = modalEl.querySelector(`#${modalId}-control-div`);
+        const claveInput = modalEl.querySelector(`#${modalId}-clave`);
+        const idControlInput = modalEl.querySelector(`[data-modal-value="id-control"]`);
+
+        if (claveDiv && !claveDiv.classList.contains("d-none")) {
+            claveDiv.classList.add("d-none");
+            if (controlDiv) controlDiv.classList.add("d-none");
+            if (claveInput) claveInput.value = "";
+            if (idControlInput) idControlInput.value = "";
+        }
+    };
+
+    // Delegación: escuchamos cambios dentro del modal
+    modalEl.addEventListener("change", (e) => {
+        const target = e.target;
+        if (!(target instanceof HTMLInputElement)) return;
+
+        // Si es un lote -> desmarcar demás lotes y resetear control
+        if (target.dataset.modalValue === "lote") {
+            const allLotes = modalEl.querySelectorAll('input[data-modal-value="lote"]');
+            allLotes.forEach(cb => {
+                if (cb !== target) cb.checked = false;
+            });
+
+            // Si el usuario cambió la selección de lote, ocultamos/limpiamos control
+            resetControlFields();
+        }
+
+        // Si es un clarificador -> desmarcar demás clarificadores
+        if (target.dataset.modalValue === "clarificador") {
+            const allClar = modalEl.querySelectorAll('input[data-modal-value="clarificador"]');
+            allClar.forEach(cb => {
+                if (cb !== target) cb.checked = false;
+            });
+        }
+    }, { passive: true });
+};
+
+
+
+const validarClave = (modalId) => {
+    const claveInput = document.getElementById(`${modalId}-clave`);
+    const controlInput = document.getElementById(`${modalId}-control`);
+    const idControlInput = document.querySelector(`[data-modal-value="id-control"]`);
+    const validar = debounce(async () => {
+        const clave = claveInput.value;
+        if (clave.length === 0) {
+            controlInput.value = "";
+            return;
+        }
+        const res = await validUserCode({ clave });
+
+        if (res.error) {
+            controlInput.value = "";
+            controlInput.classList.add("custom-modal-form-control-invalid");
+            claveInput.classList.add("custom-modal-form-control-invalid");
+            return;
+        }
+
+        if (res.up_id !== '6') {
+            claveInput.classList.add("custom-modal-form-control-invalid");
+            showToast("La clave no pertenece a un usuario de laboratorio", "error");
+            return;
+        }
+
+        controlInput.classList.remove("custom-modal-form-control-invalid");
+        claveInput.classList.remove("custom-modal-form-control-invalid");
+        controlInput.value = res.usu_nombre;
+        idControlInput.value = res.usu_id;
+
+    }, 700);
+
+    claveInput.addEventListener("input", validar);
+    controlInput.addEventListener("input", validar);
+}
+
+
 const getModalValues = (modalId) => {
     const modalEl = document.getElementById(modalId);
 
@@ -111,7 +196,8 @@ const getModalValues = (modalId) => {
         lotes: [],
         clarificadores: [],
         cantidad: "",
-        observaciones: ""
+        observaciones: "",
+        control_procesos_id: ""
     };
 
     // 1. Checkboxes seleccionados
@@ -136,6 +222,7 @@ const getModalValues = (modalId) => {
     });
 
     values["observaciones"] = modalEl.querySelector('[data-modal-value="observaciones"]').value;
+    values["control_procesos_id"] = modalEl.querySelector('[data-modal-value="id-control"]').value;
 
     return values;
 };
@@ -150,6 +237,7 @@ export async function showRegistroPolimeroModal(config = {}) {
     } = config;
 
     try {
+        const user = getUserId();
         const modalId = `registro-polimero-modal`;
         let rawHtml = await fetchHtml("views/clarificador/registroPolimero.html");
         rawHtml = rawHtml
@@ -158,33 +246,83 @@ export async function showRegistroPolimeroModal(config = {}) {
             .replace(/\$\{icon\}/g, icon)
             .replace(/\$\{size\}/g, size);
 
-        const onConfirm = (e, modalEl) => {
+        const onConfirm = async (e, modalEl) => {
             e.preventDefault();
             const values = getModalValues(modalId);
-            if(values.lotes.length === 0 || values.clarificadores.length === 0){
+
+            if (values.lotes.length === 0 || values.clarificadores.length === 0) {
                 showToast("Debe seleccionar al menos un lote y un clarificador", "error");
-                return;
+                return false;
             }
 
-            if(values.cantidad === ""){
+            if (values.cantidad === "") {
                 showToast("Debe ingresar la cantidad", "error");
-                return;
+                return false;
             }
+
+            const ultimoLote = await obtenerUltimoLote({ lote: values.lotes[0] });
+            const inputControlID = modalEl.querySelector(`[data-modalValue="id-control"], [data-modal-value="id-control"]`)
+                || modalEl.querySelector('[data-modal-value="id-control"]');
+
+            const idControlActual = inputControlID?.value || "";
+            const idControlProceso = ultimoLote.control_procesos_id ?? "";
+            const loteAnterior = ultimoLote.loteAnterior ?? "";
+            const loteActual = values.lotes[0];
+
+
+            // 1) Si NO hay control_procesos en BD y tampoco hay uno manual todavía → pedir clave
+            if (ultimoLote.error && !idControlActual) {
+                showToast(`${ultimoLote.error}, solicitar validación de lote a personal de control de procesos`, "error");
+
+                modalEl.querySelector(`#${modalId}-clave-div`)?.classList.remove("d-none");
+                modalEl.querySelector(`#${modalId}-control-div`)?.classList.remove("d-none");
+                modalEl.querySelector(`#${modalId}-clave`)?.focus();
+
+                // ᐅ SI cambiaste de lote, cambia el estatus del lote anterior
+                if (loteAnterior && loteAnterior !== loteActual) {
+                    await cambiarEstatusQuimico({ lote: loteAnterior });
+                }
+
+                return false;
+            }
+
+            // 2) Si hay control_procesos_id en BD y todavía no se ha llenado el campo manual, úsalo
+            if (idControlProceso && !idControlActual) {
+                inputControlID.value = idControlProceso;
+            }
+
+            // ᐅ SI cambiaste de lote, cambiar estatus ANTES de guardar
+            if (loteAnterior && loteAnterior !== loteActual) {
+                await cambiarEstatusQuimico(loteAnterior );
+            }
+
+            // 3) Debemos tener algún control (manual o BD)
+            const controlFinal = inputControlID.value;
+            if (!controlFinal) {
+                showToast("Debe validar el lote con control de procesos", "error");
+                return false;
+            }
+
 
             const payload = {
-                lotes: values.lotes,
-                clarificadores: values.clarificadores,
+                quimico_lote: values.lotes[0],
+                clarificador_id: values.clarificadores[0],
                 cantidad: values.cantidad,
-                observaciones: values.observaciones ?? "N/A"
+                usuario_id: user,
+                observaciones: values.observaciones ?? "N/A",
+                control_procesos_id: controlFinal, // SIEMPRE el definitivo
             };
 
             return payload;
         };
 
+
         // Handler de inicialización
         const onReady = (modalEl) => {
             generarLotes(modalId);
             generarClarificadores(modalId);
+            validarClave(modalId);
+            setupUniqueSelections(modalId);
         };
 
         // Crear y retornar el modal

@@ -195,7 +195,6 @@ const handleSearchLote = async (modalEl, modalId, lote, state) => {
 
     try {
         const resultado = await obtenerLoteQuimico(lote);
-        console.log("Resultado de la API:", resultado);
         
         if (resultado.error) {
             showResultMessage(modalEl, modalId, 'danger', resultado.error);
@@ -213,9 +212,8 @@ const handleSearchLote = async (modalEl, modalId, lote, state) => {
 
         // Guardar datos del lote encontrado
         state.loteEncontrado = resultado;
-        console.log("✅ loteEncontrado asignado:", state.loteEncontrado);
         
-        showResultMessage(modalEl, modalId, 'success', `✓ Lote encontrado exitosamente`);
+        showResultMessage(modalEl, modalId, 'success', ` Lote encontrado exitosamente`);
         showToast("Lote encontrado exitosamente", "success");
         
         showConfirmationCard(modalEl, modalId, resultado);
@@ -252,8 +250,6 @@ const handleConfirmLote = (modalEl, modalId, state) => {
         showResultMessage(modalEl, modalId, 'warning', 'Primero debe buscar un lote válido');
         return false;
     }
-
-    console.log("✅ Confirmando lote:", state.loteEncontrado);
     return state.loteEncontrado;
 };
 

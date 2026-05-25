@@ -53,7 +53,6 @@ const renderAccionesClarificador = (c, user, puede_validar_hora) => {
 
 
 const renderAccionesControlProcesos = (c, user, puede_validar_hora) => {
-    console.log(puede_validar_hora);
     return `<td class="actions-cell">
                 <div class="btn-group btn-group-actions" role="group">
                     ${puede_validar_hora ? renderButton('btn-validar', 'Validar', 'notebook-tabs', 'Validar', c.clarificador_id) : ''}

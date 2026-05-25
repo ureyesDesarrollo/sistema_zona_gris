@@ -58,11 +58,11 @@ export const registrarParametros = async (payload) => {
 
 
 export const obtenerDetalleClarificadorProceso = async (id) => {
-    try{
+    try {
         const res = await fetchApi(`${FUNCIONES}/clarificador/obtenerDetalleClarificadorProceso/${id}`);
         if (!res.success) throw new Error(res.error);
         return res.data;
-    }catch(e){
+    } catch (e) {
         console.error(`Error al obtener detalle de clarificador`, e);
         return { error: "Error al obtener detalle de clarificador", data: null };
     }
@@ -123,4 +123,91 @@ export const insertarQuimicoClarificador = async (payload) => {
         console.error(`Error al insertar quimico clarificador`, e);
         return { error: "Error al insertar quimico clarificador", data: null };
     }
+}
+
+export const obtenerUltimoLote = async (lote) => {
+    try {
+        const res = await fetchApi(`${FUNCIONES}/clarificador/obtenerUltimoLote`, 'POST', JSON.stringify(lote));
+
+        if (!res.success) {
+            // Lanzar stringificado
+            throw new Error(JSON.stringify(res));
+        }
+
+        return res.data;
+
+    } catch (e) {
+        console.error(`Error al obtener ultimo lote`, e);
+
+        let parsed = {};
+
+        // Intentar convertir el mensaje en JSON
+        try {
+            parsed = JSON.parse(e.message); // AQUÍ SE RESUELVE TODO
+        } catch {
+            parsed = { error: e.message };
+        }
+
+        return {
+            success: false,
+            error: parsed.error || "Error desconocido",
+            loteAnterior: parsed.raw?.loteAnterior || parsed.loteAnterior || null,
+            control_procesos_id: parsed.raw?.control_procesos_id || null,
+            data: null
+        };
+    }
+}
+
+
+export const validUserCode = async (payload) => {
+    try {
+        const res = await fetchApi(`${BASE_API}/validUserCode`, 'POST', JSON.stringify(payload));
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+    } catch (e) {
+        console.error(`Error al validar clave`, e);
+        return { error: "Error al validar clave", data: null };
+    }
+}
+
+export const cambiarEstatusQuimico = async (lote) => {
+    try {
+        const res = await fetchApi(`${FUNCIONES}/clarificador/cambiarEstatusQuimico`, 'POST', JSON.stringify({lote: lote}));
+        return res.data;
+    } catch (e) {
+        console.error(`Error al cambiar estatus de quimico`, e);
+        return { error: `Error al cambiar estatus de quimico ${lote}` };
+    }
+}
+
+
+
+export const finalizarMezcla = async (payload) => {
+  try {
+    const res = await fetchApi(`${FUNCIONES}/clarificador/finalizar-mezcla`, 'POST', JSON.stringify(payload));
+    return res;
+  }catch(e){
+    console.error(`Error al finalizar proceso en clarificador`, e);
+    return { error: "Error al finalizar proceso en clarificador"};
+  }
+}
+
+export const obtenerMezclaEnProceso = async() =>  { 
+  try {
+    const res = await fetchApi(`${FUNCIONES}/clarificador/obtener-mezcla-en-proceso`);
+    return res;
+  } catch (err) {
+    console.error('[obtenerMezclaEnProceso]', err);
+    return null;
+  }
+}
+
+export const obtenerMezclaById = async (id) => {
+  try {
+    const res = await fetchApi(`${FUNCIONES}/clarificador/obtener-mezcla-by-id/${id}`);
+    return res;
+  } catch (err) {
+    console.error('[obtenerMezclaById]', err);
+    return null;
+  }
 }

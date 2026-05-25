@@ -1,5 +1,7 @@
 import { showToast } from "../../components/toast.js";
-import { fetchEstadoClarificadores, fetchProcesosActivos, iniciarProceso, insertarQuimico, insertarQuimicoClarificador, obtenerLoteQuimico, registrarParametros, validacionHora } from "../../services/clarificador.service.js";
+import { fetchEstadoClarificadores, fetchProcesosActivos, iniciarProceso, 
+    insertarQuimico, insertarQuimicoClarificador, registrarParametros, 
+    validacionHora, obtenerMezclaEnProceso, finalizarMezcla, obtenerMezclaById } from "../../services/clarificador.service.js";
 import { alerta } from "../../services/alertas.service.js";
 import { handleServiceResponse } from "../../utils/api.js";
 import runAction from "../../utils/runActions.js";
@@ -9,6 +11,7 @@ import { showClarificadorValidateModal } from "./modals/validate.modal.js";
 import { updateUI } from "./clarificador.ui.js";
 import { showPreparacionPolimeroModal } from "./modals/preparacionPolimero.js";
 import { showRegistroPolimeroModal } from "./modals/registroPolimero.js";
+import { showConfirm } from "../../components/modals/modal.confirm.js";
 
 export const handleAction = async (action, user) => {
     switch (action) {
@@ -49,17 +52,44 @@ const startProcess = async (user) => {
 };
 
 const endProcess = async (user) => {
-    console.log('Finalizando proceso...');
+    const { data: procesosEnCurso } = await obtenerMezclaEnProceso();
+
+    if (!procesosEnCurso || procesosEnCurso.length === 0) {
+        showToast('Sin procesos en proceso', 'warning');
+        return;
+    }
+
+    const unvalidated = procesosEnCurso.some(p => Number(p.supervisor_validado) === 0);
+    if (unvalidated) {
+        showToast('No se puede finalizar el proceso, ya que no se ha validado por supervisor', 'warning');
+        return;
+    }
+
+    const id = procesosEnCurso[0].proceso_agrupado_id;
+    const { data: mezcla } = await obtenerMezclaById(id);
+    const pro = mezcla.map(m => m.pro_id).join('/');
+
+    const confirmacion = await showConfirm(`¿Desea finalizar el proceso ${pro}?`);
+    if (!confirmacion) return;
+
+    const payload = { proceso_agrupado_id: id };
+    const respuesta = await finalizarMezcla(payload);
+
+    if (respuesta.success) {
+        showToast('Proceso finalizado correctamente', 'success');
+        updateUI(user);
+    } else {
+        showToast(respuesta.error, 'error');
+    }
 };
 
 const preparacionPolimero = async () => {
     try {
         const result = await showPreparacionPolimeroModal();
-        console.log(result);
 
         if (result) {
             const { LOTE, NOMBRE } = result;
-            const res = await insertarQuimico({ lote: LOTE , nombre_quimico: NOMBRE });
+            const res = await insertarQuimico(LOTE, NOMBRE);
             handleServiceResponse(res, "No se pudo insertar el químico.");
             showToast(`Químico insertado correctamente: ${LOTE}`, "success");
         }
@@ -72,12 +102,11 @@ const preparacionPolimero = async () => {
 const registroPolimero = async () => {
     try {
         const result = await showRegistroPolimeroModal();
-        console.log(result);
 
         if (result) {
             const res = await insertarQuimicoClarificador(result);
             handleServiceResponse(res, "No se pudo insertar el químico.");
-            showToast(`Químico insertado correctamente: ${result.lotes}`, "success");
+            showToast(`Químico insertado correctamente: ${result.quimico_lote}`, "success");
         }
     } catch (error) {
         console.error("Error en registro de polímero:", error);
